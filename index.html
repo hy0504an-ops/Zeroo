@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<script>
+(function(){var u=navigator.userAgent,h=location.href;
+if(/KAKAOTALK/i.test(u)){
+  if(/Android/i.test(u)){location.href="intent://"+h.replace(/^https?:\/\//,"")+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent(h)+";end"}
+  else{location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(h)}
+}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>나의 아이폰 16</title>
+<style>
+:root{--page:#e9e9ee;--bezel:#111;--label:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d10}}
+:root[data-theme="dark"]{--page:#0d0d10}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--page);display:flex;align-items:center;justify-content:center;font-family:-apple-system,"SF Pro Text","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;overflow:hidden}
+.phone{position:relative;width:390px;height:844px;max-width:100%;max-height:100%;border-radius:55px;border:10px solid var(--bezel);overflow:hidden;color:var(--label);
+background:#000}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:5}
+.status{position:absolute;z-index:6;top:0;left:0;right:0;height:54px;padding:18px 34px 0 38px;display:flex;justify-content:space-between;font-size:16px;font-weight:600}
+.status .r{display:flex;gap:6px;align-items:center;font-size:14px}
+.batt{width:25px;height:12px;border:1.5px solid rgba(255,255,255,.6);border-radius:4px;padding:1px;position:relative}
+.batt i{display:block;width:80%;height:100%;background:#fff;border-radius:2px}
+.grid{position:absolute;top:84px;left:0;right:0;padding:0 22px;display:grid;grid-template-columns:repeat(4,1fr);row-gap:22px}
+.app{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+.ic{width:60px;height:60px;border-radius:14px;display:grid;place-items:center;font-size:30px;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .12s}
+.app:active .ic{transform:scale(.9)}
+.app span{font-size:11.5px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.dots{position:absolute;bottom:128px;left:0;right:0;display:flex;justify-content:center;gap:7px}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45)}
+.dots i:first-child{background:#fff}
+.dock{position:absolute;bottom:22px;left:14px;right:14px;height:92px;border-radius:34px;background:rgba(255,255,255,.22);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;padding:0 8px}
+.bar{position:absolute;z-index:7;bottom:8px;left:50%;transform:translateX(-50%);width:136px;height:5px;border-radius:3px;background:#fff}
+.toast{position:absolute;bottom:130px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:13px;padding:8px 14px;border-radius:16px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1}
+.appv{position:absolute;inset:0;z-index:2;background:#000;padding:56px 18px 30px;display:flex;flex-direction:column;opacity:0;transform:scale(.92);pointer-events:none;transition:.22s}
+.appv.on{opacity:1;transform:none;pointer-events:auto}
+.appv h2{font-size:26px;margin:6px 0 12px}
+.back{background:none;border:0;color:#7ab6ff;font:inherit;font-size:16px;text-align:left;padding:4px 0;cursor:pointer}
+.appv .body{flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px;min-height:0}
+.appv textarea,.appv input{background:#1c1c1e;color:#fff;border:0;border-radius:12px;padding:12px;font:inherit;font-size:16px;width:100%}
+.appv textarea{flex:1;resize:none}
+.row{padding:12px 0;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer}
+.av{width:44px;height:44px;border-radius:50%;background:#333;display:grid;place-items:center;font-size:22px;flex:none}
+.bub{max-width:75%;padding:9px 13px;border-radius:18px;align-self:flex-start;background:#2c2c2e}
+.bub.me{align-self:flex-end;background:#f7d800;color:#000}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cal b{font-weight:400;opacity:.5;font-size:12px}
+.cal i{font-style:normal;padding:8px 0;border-radius:50%}
+.cal i.t{background:#ff453a}
+.ph{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.ph img{width:100%;aspect-ratio:1;object-fit:cover}
+.btn{background:#1c1c1e;color:#7ab6ff;border:0;border-radius:12px;padding:12px;font:inherit;cursor:pointer}
+.dial{font-size:34px;text-align:center;min-height:48px;margin:10px 0}
+.pad{display:grid;grid-template-columns:repeat(3,70px);gap:12px 18px;justify-content:center;margin-bottom:12px}
+.pad button{width:70px;height:70px;border-radius:50%;border:0;background:#1c1c1e;color:#fff;font:inherit;font-size:28px;cursor:pointer}
+.send{display:flex;gap:8px}
+.pass{position:absolute;inset:0;z-index:3;background:#000;text-align:center;transition:transform .4s cubic-bezier(.3,.7,.2,1)}
+.pass.off{transform:translateY(-100%)}
+.pass .m{position:absolute;top:96px;left:0;right:0;font-size:18px;font-weight:500}
+.pdots{position:absolute;top:140px;left:0;right:0;display:flex;justify-content:center;gap:18px}
+.pdots i{width:13px;height:13px;border-radius:50%;border:1.5px solid #fff}
+.pdots i.f{background:#fff}
+.pdots.shake{animation:sh .4s}
+@keyframes sh{20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.keys{position:absolute;top:230px;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,76px);gap:14px 20px}
+.keys button{width:76px;height:76px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:32px;cursor:pointer}
+.keys button:active{background:rgba(255,255,255,.4)}
+.keys button.e{background:none;font-size:26px}
+.lock{position:absolute;inset:0;z-index:4;background:#000;text-align:center;cursor:pointer;transition:transform .4s cubic-bezier(.3,.7,.2,1)}
+.lock.off{transform:translateY(-100%)}
+.lock .d{position:absolute;top:80px;left:0;right:0;font-size:19px;font-weight:600;opacity:.85}
+.lock .t{position:absolute;top:104px;left:0;right:0;font-size:92px;font-weight:600;letter-spacing:-2px;line-height:1.1}
+.lock .q{position:absolute;bottom:56px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:22px}
+.lock .q.l{left:44px}.lock .q.r{right:44px}
+.lock .h{position:absolute;bottom:26px;left:0;right:0;font-size:12px;opacity:.5}
+@media (max-width:430px){body{align-items:stretch}.phone{width:100%;height:100%;border:0;border-radius:0}.island{top:max(11px,env(safe-area-inset-top))}}
+</style>
+</head>
+<body>
+<main class="phone">
+  <div class="island" id="island" role="button" aria-label="화면 잠금"></div>
+  <div class="status"><span>9:41</span><span class="r">5G <span class="batt"><i></i></span></span></div>
+
+  <div class="grid" id="grid"></div>
+  <div class="dots"><i></i><i></i></div>
+
+  <nav class="dock" id="dock"></nav>
+  <div class="appv" id="appv"><button class="back" id="aback">‹ 홈</button><h2 id="atitle"></h2><div class="body" id="abody"></div></div>
+  <div class="pass" id="pass"><div class="m" id="pm">암호 입력</div><div class="pdots" id="pdots"><i></i><i></i><i></i><i></i></div><div class="keys" id="keys"></div></div>
+  <div class="lock" id="lock"><div class="d" id="lockDate"></div><div class="t">9:41</div><div class="q l">🔦</div><div class="q r">📷</div><div class="h">위로 쓸어 올려 열기</div></div>
+  <div class="toast" id="toast">아직 준비 중이에요</div>
+  <div class="bar"></div>
+</main>
+<script>
+var apps=[
+ ["사진","🌸","linear-gradient(135deg,#ffd36b,#ff7aa8)"],
+ ["카메라","📷","linear-gradient(#9a9aa0,#6c6c72)"],
+ ["일기","📓","linear-gradient(135deg,#ffb347,#ff7a45)"],
+ ["캘린더","🗓️","linear-gradient(#ffffff,#eaeaf0)"],
+ ["메모","📝","linear-gradient(#ffe46b,#f5c518)"],
+ ["설정","⚙️","linear-gradient(#a8a8ae,#7a7a80)"]
+];
+var dock=[
+ ["전화","📞","linear-gradient(#5be36b,#1fb84a)"],
+ ["메시지","💬","linear-gradient(#5be36b,#1fb84a)"],
+ ["카카오톡","🗨️","linear-gradient(#ffe812,#f7d800)"],
+ ["Instagram","📸","linear-gradient(45deg,#fdc468,#df4996 55%,#4f5bd5)"]
+];
+function make(list,box,labels){
+  var el=document.getElementById(box);
+  list.forEach(function(a){
+    var b=document.createElement("button");b.className="app";
+    b.innerHTML='<div class="ic" style="background:'+a[2]+'">'+a[1]+'</div>'+(labels?'<span>'+a[0]+'</span>':'');
+    b.setAttribute("aria-label",a[0]);
+    b.onclick=function(){openApp(a[0])};
+    el.appendChild(b);
+  });
+}
+make(apps,"grid",true);make(dock,"dock",false);
+var appv=document.getElementById("appv"),atitle=document.getElementById("atitle"),abody=document.getElementById("abody");
+function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h)e.innerHTML=h;return e}
+function btn(t,fn){var b=el("button","btn",t);b.onclick=fn;return b}
+function sv(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function ld(k){try{return localStorage.getItem(k)||""}catch(e){return ""}}
+function note(k,ph){return function(b){var t=el("textarea");t.placeholder=ph;t.value=ld(k);t.oninput=function(){sv(k,t.value)};b.appendChild(t)}}
+function photos(b){var g=el("div","ph"),f=el("input");f.type="file";f.accept="image/*";f.multiple=true;f.hidden=true;f.onchange=function(){[].forEach.call(f.files,function(x){var i=new Image();i.src=URL.createObjectURL(x);g.appendChild(i)})};b.append(btn("사진 추가",function(){f.click()}),f,g)}
+function chat(b){var log=el("div","body"),row=el("div","send"),inp=el("input");inp.placeholder="메시지 입력";
+  function add(){var v=inp.value.trim();if(!v)return;log.appendChild(el("div","bub me")).textContent=v;inp.value="";log.scrollTop=log.scrollHeight}
+  inp.onkeydown=function(e){if(e.key==="Enter")add()};row.append(inp,btn("전송",add));b.append(log,row)}
+function kakao(b){atitle.textContent="카카오톡";b.innerHTML="";["나와의 채팅","친구","가족"].forEach(function(n){var r=el("div","row",'<div class="av">👤</div><div>'+n+'</div>');r.onclick=function(){b.innerHTML="";atitle.textContent=n;b.appendChild(btn("‹ 목록",function(){kakao(b)}));chat(b)};b.appendChild(r)})}
+function cal(b){var d=new Date(),y=d.getFullYear(),m=d.getMonth(),g=el("div","cal"),i;atitle.textContent=(m+1)+"월";"일월화수목금토".split("").forEach(function(w){g.appendChild(el("b","",w))});for(i=0;i<new Date(y,m,1).getDay();i++)g.appendChild(el("i"));for(i=1;i<=new Date(y,m+1,0).getDate();i++)g.appendChild(el("i",i===d.getDate()?"t":"",i));b.appendChild(g)}
+function dial(b){var s="",d=el("div","dial"),p=el("div","pad");"123456789*0#".split("").forEach(function(k){var x=el("button","",k);x.onclick=function(){s+=k;d.textContent=s};p.appendChild(x)});b.append(d,p,btn("지우기",function(){s=s.slice(0,-1);d.textContent=s}))}
+var A={"사진":photos,"Instagram":photos,"카메라":function(b){b.appendChild(el("div","row","카메라 미리보기")).style.cssText="flex:1;justify-content:center;opacity:.5"},"일기":note("diary","오늘의 일기를 써보세요"),"메모":note("memo","메모를 입력하세요"),"캘린더":cal,"설정":function(b){["Wi-Fi","Bluetooth","알림","디스플레이 및 밝기","일반"].forEach(function(n){b.appendChild(el("div","row",n))})},"전화":dial,"메시지":chat,"카카오톡":kakao};
+function openApp(n){atitle.textContent=n;abody.innerHTML="";A[n](abody);appv.classList.add("on")}
+function closeApp(){appv.classList.remove("on")}
+document.getElementById("aback").onclick=closeApp;
+document.querySelector(".bar").addEventListener("click",closeApp);
+var lock=document.getElementById("lock");
+document.getElementById("lockDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"long"});
+function unlock(){lock.classList.add("off")}
+lock.addEventListener("click",unlock);
+var y0=null;
+lock.addEventListener("touchstart",function(e){y0=e.touches[0].clientY},{passive:true});
+lock.addEventListener("touchend",function(e){if(y0!==null&&y0-e.changedTouches[0].clientY>50)unlock();y0=null});
+var pass=document.getElementById("pass"),pdots=document.getElementById("pdots"),pm=document.getElementById("pm"),keys=document.getElementById("keys"),buf="";
+function draw(){[].forEach.call(pdots.children,function(d,i){d.classList.toggle("f",i<buf.length)})}
+function press(k){
+  if(k==="del"){buf=buf.slice(0,-1);draw();return}
+  if(buf.length>=4)return;
+  buf+=k;draw();
+  if(buf.length===4){
+    if(buf==="0905"){setTimeout(function(){pass.classList.add("off");buf="";draw();pm.textContent="암호 입력"},180)}
+    else{pm.textContent="다시 시도하세요";pdots.classList.add("shake");setTimeout(function(){pdots.classList.remove("shake");buf="";draw()},420)}
+  }
+}
+["1","2","3","4","5","6","7","8","9","","0","del"].forEach(function(k){
+  if(k===""){keys.appendChild(document.createElement("div"));return}
+  var b=document.createElement("button");b.textContent=k==="del"?"⌫":k;if(k==="del")b.className="e";
+  b.setAttribute("aria-label",k==="del"?"지우기":k);b.onclick=function(){press(k)};keys.appendChild(b);
+});
+document.addEventListener("keydown",function(e){
+  if(!lock.classList.contains("off")||pass.classList.contains("off"))return;
+  if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace")press("del");
+});
+document.getElementById("island").addEventListener("click",function(){lock.classList.remove("off");pass.classList.remove("off");buf="";draw();pm.textContent="암호 입력"});
+</script>
+</body>
+</html>
