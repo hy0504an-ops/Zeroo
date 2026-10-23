@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<script>
+/* 파일이 일부만 올라갔거나 오류가 있을 때만 아래에 안내가 떠요 */
+(function(){
+  var msgs=[];
+  function box(t){var d=document.getElementById('dbgbox');if(!d){d=document.createElement('div');d.id='dbgbox';d.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#5a1414;color:#fff;font:12px/1.5 sans-serif;padding:10px 12px;white-space:pre-wrap;max-height:45%;overflow:auto';(document.body||document.documentElement).appendChild(d)}d.textContent=t}
+  window.addEventListener('error',function(e){msgs.push((e.message||'error')+(e.lineno?' (줄 '+e.lineno+')':''))});
+  setTimeout(function(){if(!window.__ok)box('페이지가 끝까지 실행되지 않았어요.\nindex.html을 다시 올린 뒤 새로고침해 주세요.'+(msgs.length?'\n\n'+msgs.join('\n'):''))},3000);
+})();
+</script>
+<script>
+/* 카톡·네이버·인스타 등 앱 안 브라우저로 열리면 크롬으로 다시 열기 (일반 웹주소에서만 동작) */
+(function(){
+  try{
+    if(!/^https?:$/.test(location.protocol))return;
+    var ua=navigator.userAgent||'',url=location.href;
+    if(/[?&]nochrome=1/.test(location.search))return;
+    if(!/KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|Line\/|DaumApps/i.test(ua))return;
+    var plain=url.replace(/^https?:\/\//,'');
+    var back=url+(url.indexOf('?')>-1?'&':'?')+'nochrome=1';
+    if(/android/i.test(ua)){
+      location.href='intent://'+plain+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(back)+';end';
+    }else if(/iphone|ipad|ipod/i.test(ua)){
+      if(/KAKAOTALK/i.test(ua))location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(url);
+      else location.href='googlechromes://'+plain;
+    }
+  }catch(e){}
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>나의 아이폰 16</title>
+<style>
+:root{--sub:rgba(255,255,255,.6);--blue:#0a84ff;--green:#30d158;--line:rgba(255,255,255,.12);--card:#1c1d1c;--glass:rgba(255,255,255,.14)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:#000;color:#fff;font-family:"SamsungOne","Noto Sans KR","Apple SD Gothic Neo",-apple-system,sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+svg{display:block;fill:currentColor}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;background:#000;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.screen.on{display:flex}
+.status{display:flex;justify-content:space-between;padding:14px 26px 0;font-weight:600;font-size:15px;flex:none}
+/* 잠금 */
+.clock{text-align:center;margin-top:36px}
+.clock .d{font-size:18px;color:var(--sub)}
+.clock .t{font-size:76px;font-weight:300;letter-spacing:-2px}
+.pass{margin:auto;text-align:center;width:100%}
+.pass h2{font-size:18px;font-weight:500;margin:0 0 18px}
+.dots{display:flex;gap:16px;justify-content:center;margin-bottom:28px;min-height:14px}
+.dots i{width:13px;height:13px;border:1.5px solid #fff;border-radius:50%}
+.dots i.f{background:#fff}
+.dots.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:14px;justify-content:center}
+.pad button{height:76px;border-radius:50%;background:#1c1c1e;font-size:30px;font-weight:300;line-height:1.1}
+.pad small{display:block;font-size:10px;letter-spacing:2px;color:var(--sub)}
+.pad button:active{background:#4a4a4d}
+.pad .ghost{background:none;font-size:18px}
+.lockfoot{display:flex;justify-content:space-between;padding:16px 40px 20px;color:var(--sub);font-size:20px}
+/* 홈 */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 6px;padding:34px 18px 10px;justify-items:center}
+.app{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;width:76px}
+.ic{width:62px;height:62px;border-radius:15px;display:grid;place-items:center;font-size:30px}
+.dock{margin:auto 14px 12px;padding:14px;border-radius:30px;background:var(--glass);backdrop-filter:blur(20px);display:flex;justify-content:space-around}
+.dock .app{width:auto}
+.home-hint{text-align:center;color:var(--sub);font-size:12px;padding-bottom:10px}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(60,60,64,.95);padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:99;white-space:nowrap}
+.toast.on{opacity:1}
+/* 전화 앱 (삼성 스타일) */
+.back{padding:6px 22px;color:var(--blue);font-size:16px;text-align:left;flex:none}
+.tab{display:none;flex:1;flex-direction:column;min-height:0}
+.tab.on{display:flex}
+.hdr{flex:none;text-align:center;padding:34px 0 6px}
+.hdr h1{margin:0;font-size:32px;font-weight:700}
+.hdr p{margin:8px 0 0;color:var(--sub);font-size:15px}
+.tools{display:flex;justify-content:flex-end;gap:26px;padding:10px 28px 12px;flex:none}
+.tools svg{width:26px;height:26px}
+.scroll{flex:1;overflow-y:auto;padding:0 14px 18px}
+.card{background:var(--card);border-radius:26px;overflow:hidden;margin-bottom:6px}
+.banner{padding:18px 22px 12px;font-size:15px;line-height:1.5}
+.banner .acts{display:flex;justify-content:flex-end;gap:30px;padding:10px 4px 2px;font-weight:700}
+.banner .acc{display:flex;align-items:center;gap:14px;margin-top:12px;color:#ddd}
+.banner .acc i{width:34px;height:34px;border-radius:10px;background:#2f5bff;display:block}
+.grp{padding:16px 12px 8px;font-size:13px;color:#cfcfcf;display:flex;align-items:center;gap:10px}
+.grp svg{width:20px;height:20px;color:#ccc}
+.row{display:flex;align-items:center;gap:16px;width:100%;padding:0 20px;min-height:64px;text-align:left;position:relative}
+.row:active{background:#2b2c2b}
+.row + .row::before{content:"";position:absolute;top:0;left:78px;right:20px;border-top:1px solid #333}
+.row .n{font-size:18px}
+.row .w{margin-left:auto;color:#bbb;font-size:14px;white-space:nowrap}
+.row .ci{width:34px;display:grid;place-items:center;color:#cfd2cf;position:relative;flex:none}
+.row .ci svg{width:24px;height:24px}
+.row .ci b{position:absolute;top:-6px;right:0;font-size:12px}
+.row.missed .n,.row.missed .ci{color:#ff6b5e}
+.row.recent .row .n{font-size:18px}
+.av{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:19px;font-weight:600;flex:none}
+.crow{min-height:68px}
+.crow + .crow::before{left:84px}
+/* 키패드 */
+.disp{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 20px 18px;min-height:0}
+.disp .num{font-size:38px;font-weight:300;word-break:break-all;text-align:center;letter-spacing:1px}
+.disp .who{color:var(--sub);font-size:15px;min-height:22px;margin-top:4px}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);max-width:380px;width:100%;margin:0 auto;row-gap:6px;flex:none}
+.kp button{height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.kp button b{font-size:52px;font-weight:300;line-height:1}
+.kp button .k{font-size:11px;color:#ddd;letter-spacing:1px;height:12px;line-height:12px}
+.kp button:active b{opacity:.5}
+.kp .star b{font-size:44px}
+.kbot{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;max-width:380px;width:100%;margin:10px auto 12px;flex:none}
+.callbtn{grid-column:2;justify-self:center;width:86px;height:86px;border-radius:50%;background:#a9b2a5;color:#fff;display:grid;place-items:center;position:relative;opacity:.65}
+.callbtn.on{opacity:1;background:#3fbf6a}
+.callbtn svg{width:40px;height:40px}
+.callbtn span{position:absolute;top:22px;right:22px;font-size:13px;font-weight:800}
+.del{grid-column:3;justify-self:center;font-size:28px;color:#ddd;visibility:hidden}
+.del.on{visibility:visible}
+.tabbar{display:flex;flex:none;background:#000;padding-top:6px}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;color:var(--sub);padding:8px 0}
+.tabbar button svg{width:30px;height:30px}
+.tabbar button.on{color:#fff;font-weight:700}
+.homebar{width:130px;height:5px;border-radius:3px;background:#d0d0d0;margin:6px auto 4px;flex:none}
+/* 통화 중 */
+#incall{background:linear-gradient(#0f2a30,#0e1c1f 55%,#0b1416);align-items:center}
+.ictop{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:22px;font-size:17px;position:relative;width:100%}
+.ictop svg{width:20px;height:20px}
+.ictop .rc{display:flex;align-items:center;gap:6px;color:#e6f5ea}
+.ictop .dot{width:9px;height:9px;border-radius:50%;background:#7ee0a0}
+.ictop .sep{color:var(--sub)}
+.icname{margin-top:60px;font-size:38px;font-weight:700;text-align:center;padding:0 20px}
+.icnum{margin-top:8px;color:#9fb3b7;font-size:17px;text-align:center}
+.vol{position:absolute;right:16px;top:230px;width:62px;height:180px;border-radius:30px;background:#2a2e30;overflow:hidden}
+.vol i{position:absolute;left:0;right:0;bottom:0;height:55%;background:#6b6f70}
+.vol em{position:absolute;top:10px;left:0;right:0;text-align:center;font-style:normal;letter-spacing:2px;font-weight:700}
+.panel{margin:auto 0 0;width:calc(100% - 28px);background:#060c0d;border-radius:28px;padding:34px 12px 26px;display:flex;flex-direction:column;align-items:center;gap:26px}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);row-gap:34px;width:100%}
+.pgrid button{display:flex;flex-direction:column;align-items:center;gap:12px;font-size:13px}
+.pgrid .pi{width:40px;height:40px;display:grid;place-items:center}
+.pgrid .pi svg{width:36px;height:36px}
+.pgrid button.act .pi{color:#3fd47a}
+.pgrid .rbox{width:38px;height:38px;border-radius:8px;background:#1fa35a;display:grid;place-items:center}
+.pgrid .rbox svg{width:26px;height:26px}
+.endbtn{width:84px;height:84px;border-radius:50%;background:#e5453b;display:grid;place-items:center}
+.endbtn svg{width:40px;height:40px;transform:rotate(135deg)}
+.icstat{margin-top:6px;color:#9fb3b7;font-size:14px;min-height:20px}
+/* 음성 메모 */
+.bar{display:flex;align-items:center;padding:6px 18px}
+.bar.t2 h1{font-size:34px;margin:0}
+.stage{display:flex;flex-direction:column;align-items:center;padding:14px 0 18px}
+canvas{width:100%;height:80px;display:block}
+.timer{font-size:44px;font-weight:200;font-variant-numeric:tabular-nums;margin:6px 0 16px}
+.rec{width:76px;height:76px;border-radius:50%;border:3px solid #fff;display:grid;place-items:center}
+.rec span{width:60px;height:60px;border-radius:50%;background:var(--blue);transition:.2s}
+.rec.live span{width:28px;height:28px;border-radius:7px;background:#fff}
+.state{color:var(--sub);font-size:14px;margin-top:12px;min-height:20px}
+.item{padding:12px 16px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.item .top button{color:var(--blue);font-size:14px}
+.item audio{width:100%;height:36px}
+.empty{padding:22px 16px;color:var(--sub);text-align:center;font-size:15px}
+
+/* 알림 배너 */
+.notif{position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:100;background:rgba(48,48,52,.96);backdrop-filter:blur(16px);border-radius:22px;padding:12px 14px;display:flex;gap:12px;align-items:center;transform:translateY(-160%);transition:transform .35s;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.notif.on{transform:none}
+.notif .ni{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:20px;flex:none}
+.notif .nt{min-width:0;flex:1}
+.notif .na{font-size:12px;color:#bbb;display:flex;justify-content:space-between}
+.notif .nn{font-weight:700;font-size:15px;margin-top:1px}
+.notif .nm{font-size:14px;color:#e6e6e6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;border-radius:11px;background:#ff3b30;color:#fff;font-size:13px;font-weight:700;display:none;place-items:center;padding:0 6px}
+.badge.on{display:grid}
+.ic{position:relative}
+/* 채팅 */
+.cview{display:none;flex:1;flex-direction:column;min-height:0}
+.cview.on{display:flex}
+.chead{display:flex;align-items:center;gap:10px;padding:8px 16px 10px;flex:none}
+.chead h1{margin:0;font-size:26px;font-weight:700;flex:1}
+.chead button{color:var(--blue);font-size:16px}
+.crow2{display:flex;align-items:center;gap:14px;padding:11px 18px;width:100%;text-align:left}
+.crow2:active{background:#1c1c1e}
+.crow2 .tx{flex:1;min-width:0}
+.crow2 .nm{font-size:17px;font-weight:600}
+.crow2 .lm{font-size:14px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.crow2 .meta{text-align:right;font-size:12px;color:var(--sub);display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.crow2 .meta b{background:#ff3b30;color:#fff;border-radius:10px;padding:1px 7px;font-size:12px}
+.msgs{flex:1;overflow-y:auto;padding:12px 12px 8px;display:flex;flex-direction:column;gap:8px}
+.m{display:flex;align-items:flex-end;gap:6px;max-width:82%}
+.m.me{align-self:flex-end;flex-direction:row-reverse}
+.m .b{padding:9px 13px;border-radius:16px;font-size:15.5px;line-height:1.4;white-space:pre-wrap;word-break:break-word}
+.m .tm{font-size:11px;opacity:.65;flex:none}
+.inp{display:flex;gap:8px;padding:8px 10px;flex:none}
+.inp input{flex:1;border:0;border-radius:20px;padding:11px 15px;font:inherit;font-size:16px;outline:0}
+.inp button{font-weight:700;padding:0 14px;border-radius:20px}
+.talk .msgs{background:#b2c7da}
+.talk .m .b{background:#fff;color:#111;border-top-left-radius:4px}
+.talk .m.me .b{background:#fee500;border-top-left-radius:16px;border-top-right-radius:4px}
+.talk .m .tm{color:#333}
+.talk .chead.th{background:#b2c7da;color:#111}
+.talk .chead.th button{color:#333}
+.talk .inp{background:#fff}.talk .inp input{background:#f1f1f1;color:#111}.talk .inp button{background:#fee500;color:#111}
+.sms .m .b{background:#2c2c2e;color:#fff;border-bottom-left-radius:4px}
+.sms .m.me .b{background:#0a84ff;border-bottom-left-radius:16px;border-bottom-right-radius:4px}
+.sms .inp{background:#000;border-top:1px solid var(--line)}.sms .inp input{background:#1c1c1e;color:#fff}.sms .inp button{background:#0a84ff;color:#fff}
+/* 카메라 */
+#camv{flex:1;min-height:0;width:100%;object-fit:cover;background:#111}
+.shutter{display:flex;justify-content:center;align-items:center;padding:20px 0 16px;gap:50px}
+.shutter button.sh{width:74px;height:74px;border-radius:50%;border:4px solid #fff;display:grid;place-items:center}
+.shutter button.sh span{width:58px;height:58px;border-radius:50%;background:#fff}
+.shutter button.sh:active span{transform:scale(.9)}
+.thumb{width:48px;height:48px;border-radius:10px;background:#222 center/cover;border:1px solid #444}
+/* 갤러리 */
+.gg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 2px 14px}
+.gg div{aspect-ratio:1;background:#222 center/cover}
+.viewer{position:fixed;inset:0;background:#000;z-index:60;display:none;flex-direction:column}
+.viewer.on{display:flex}
+.viewer img{flex:1;min-height:0;object-fit:contain;width:100%}
+.viewer .vb{display:flex;justify-content:space-between;padding:14px 22px calc(14px + env(safe-area-inset-bottom,0px));color:var(--blue);font-size:17px}
+/* 일기 */
+.dtxt{width:calc(100% - 28px);margin:6px 14px;background:#1c1c1e;color:#fff;border:0;border-radius:16px;padding:14px;font:inherit;font-size:16px;min-height:110px;resize:none;outline:0}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:6px 20px 10px}
+.drow .pill{background:var(--blue);padding:9px 18px;border-radius:18px;font-weight:700}
+.drow .mic{display:flex;align-items:center;gap:10px;color:var(--sub);font-size:14px}
+.rec.sm{width:44px;height:44px;border-width:2px}
+.rec.sm span{width:32px;height:32px}
+.rec.sm.live span{width:16px;height:16px;border-radius:4px}
+.dent{padding:14px 18px;border-bottom:1px solid var(--line)}
+.dent .dd{font-size:13px;color:var(--sub);margin-bottom:6px;display:flex;justify-content:space-between}
+.dent .dd button{color:var(--blue)}
+.dent p{margin:0;white-space:pre-wrap;line-height:1.5}
+.dent audio{width:100%;height:36px;margin-top:8px}
+
+/* 키패드-탭바 간격 */
+.tab{overflow:hidden}
+.kp button{height:clamp(58px,10vh,96px)}
+.kp button b{font-size:clamp(34px,6vh,52px)}
+.callbtn{width:clamp(66px,10vh,86px);height:clamp(66px,10vh,86px)}
+.kbot{margin:6px auto 10px}
+.tabbar{border-top:1px solid #262626;margin-top:6px;padding-bottom:2px;position:relative;z-index:2;background:#000}
+/* 카톡 (다크) */
+.talk{background:#0b0b0b}
+.tv{display:none;flex:1;flex-direction:column;min-height:0}
+.tv.on{display:flex}
+.th1{display:flex;align-items:center;gap:6px;padding:10px 20px 8px;flex:none}
+.th1 h1{margin:0;font-size:28px;font-weight:700;flex:1}
+.th1 .ti{display:flex;gap:22px;align-items:center}
+.th1 svg{width:26px;height:26px}
+.chips{display:flex;gap:10px;padding:8px 20px 12px;overflow-x:auto;flex:none}
+.chip{background:#262626;border-radius:22px;padding:11px 20px;font-size:15px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.chip.on{background:#f2f2f2;color:#111;font-weight:600}
+.chip b{background:#ff4b2b;color:#fff;border-radius:12px;font-size:12px;padding:2px 7px}
+.kav{width:60px;height:60px;border-radius:24px;display:grid;place-items:center;flex:none;overflow:hidden}
+.kav svg{width:34px;height:34px;color:rgba(255,255,255,.92)}
+.kav.sm{width:46px;height:46px;border-radius:18px}
+.kav.sm svg{width:26px;height:26px}
+.krow{display:flex;align-items:center;gap:16px;padding:12px 20px;width:100%;text-align:left}
+.krow:active{background:#171717}
+.krow .tx{flex:1;min-width:0}
+.krow .nm{font-size:17px}
+.krow .lm{font-size:14px;color:#9a9a9a;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.krow .mt{display:flex;flex-direction:column;align-items:flex-end;gap:8px;font-size:12.5px;color:#9a9a9a;align-self:flex-start;padding-top:2px}
+.krow .mt b{background:#ff4b2b;color:#fff;border-radius:12px;min-width:24px;height:24px;display:grid;place-items:center;font-size:13px;padding:0 7px}
+.ksec{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 8px;font-size:15px;font-weight:600}
+.ksec span{font-weight:400;color:#9a9a9a;margin-left:4px}
+.seg{display:flex;background:#1b1b1b;border-radius:18px;padding:4px;font-size:13px;font-weight:400}
+.seg button{padding:6px 12px;border-radius:14px;color:#9a9a9a}
+.seg button.on{background:#000;color:#fff}
+.tnav{display:flex;border-top:1px solid #1c1c1c;background:#0b0b0b;flex:none;padding:8px 0 2px}
+.tnav button{flex:1;display:grid;place-items:center;padding:8px 0;color:#9a9a9a;position:relative}
+.tnav button.on{color:#fff}
+.tnav svg{width:30px;height:30px}
+.tnav .nb{position:absolute;top:0;left:calc(50% + 6px);background:#ff4b2b;color:#fff;border-radius:12px;font-size:12px;font-weight:700;padding:2px 7px;display:none}
+.tnav .nb.on{display:block}
+.talk .msgs{background:#141414}
+.talk .m .b{background:#2d2d30;color:#fff;border-top-left-radius:4px}
+.talk .m.me .b{background:#fee500;color:#111;border-top-left-radius:16px;border-top-right-radius:4px}
+.talk .m .tm{color:#aaa}
+.talk .chead.th{background:#0b0b0b;color:#fff}
+.talk .chead.th button{color:#fff;font-size:22px}
+.talk .inp{background:#0b0b0b}.talk .inp input{background:#262626;color:#fff}.talk .inp button{background:#fee500;color:#111}
+/* 인스타 */
+#insta{background:#000}
+.ig-top{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 8px;flex:none}
+.ig-logo{font-size:30px;font-weight:800;font-style:italic;font-family:"Snell Roundhand","Brush Script MT",cursive,serif;letter-spacing:.5px}
+.ig-top .ti{display:flex;gap:20px;font-size:24px}
+.ig-stories{display:flex;gap:14px;padding:6px 14px 12px;overflow-x:auto;flex:none}
+.ig-st{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;width:70px;flex:none}
+.sring{width:68px;height:68px;border-radius:50%;padding:3px;background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5)}
+.sring.me{background:#333}
+.sin{width:100%;height:100%;border-radius:50%;border:3px solid #000;display:grid;place-items:center;font-size:20px;font-weight:700}
+.ig-post{padding-bottom:14px}
+.ig-ph{display:flex;align-items:center;gap:10px;padding:8px 14px;font-weight:600;font-size:14px}
+.ig-ph .sin{width:34px;height:34px;border:0;font-size:13px}
+.ig-img{aspect-ratio:1;display:grid;place-items:center;font-size:90px}
+.ig-act{display:flex;gap:18px;padding:10px 14px 4px;font-size:25px}
+.ig-act .liked{color:#ff3040}
+.ig-lk{padding:0 14px;font-weight:600;font-size:14px}
+.ig-cp{padding:4px 14px 0;font-size:14px;line-height:1.4}
+.ig-nav{display:flex;border-top:1px solid #1c1c1c;flex:none;padding:8px 0 2px;background:#000}
+.ig-nav button{flex:1;display:grid;place-items:center;font-size:26px;padding:6px 0;opacity:.55}
+.ig-nav button.on{opacity:1}
+.ig-prof{padding:12px 18px}
+.ig-pr1{display:flex;align-items:center;gap:22px}
+.ig-pr1 .sring{width:86px;height:86px;flex:none}
+.ig-stat{display:flex;flex:1;justify-content:space-around;text-align:center;font-size:13px}
+.ig-stat b{display:block;font-size:18px}
+.ig-btn{margin-top:14px;background:#262626;border-radius:10px;text-align:center;padding:9px;font-weight:600;font-size:14px;width:100%}
+.ig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:14px}
+.ig-grid div{aspect-ratio:1;background:#222 center/cover}
+.gd{padding:16px 14px 8px;font-size:15px;font-weight:600}
+
+.sr{display:flex;align-items:center;gap:7px}
+.sr svg{width:17px;height:17px;fill:#fff}
+.sr .w6{font-size:7px;line-height:7px;font-weight:700;margin-left:-4px;text-align:center}
+.sr .bat{display:flex;align-items:center;gap:3px;border-radius:13px;padding:1px 9px 1px 6px;font-size:14px;font-weight:800;color:#111;background:#c4c4c4}
+.sr .bat svg{width:14px;height:14px;fill:#111}
+/* 수신 전화 */
+#ring{background:linear-gradient(#17262c,#0b1114);align-items:center}
+.rl{margin-top:70px;color:#9fb3b7;font-size:16px;text-align:center}
+.rn{margin-top:14px;font-size:42px;font-weight:700;text-align:center}
+.rnum{margin-top:6px;color:#9fb3b7;font-size:17px;text-align:center;min-height:22px}
+.rav{width:120px;height:120px;border-radius:50%;background:linear-gradient(160deg,#8cc3ff,#4c8df0);display:grid;place-items:center;margin:34px auto 0;animation:rp 1.2s infinite}
+.rav svg{width:70px;height:70px;fill:#fff}
+@keyframes rp{50%{box-shadow:0 0 0 18px rgba(140,195,255,.15)}}
+.rbtns{margin-top:auto;display:flex;justify-content:space-around;width:100%;padding:0 40px 14px}
+.rb{width:78px;height:78px;border-radius:50%;display:grid;place-items:center}
+.rb svg{width:38px;height:38px;fill:#fff}
+.rb.dec{background:#e5453b}.rb.dec svg{transform:rotate(135deg)}
+.rb.acc{background:#30d158;animation:sw 1s infinite alternate}
+@keyframes sw{to{transform:translateY(-10px)}}
+.rcap{display:flex;justify-content:space-around;width:100%;padding:0 40px calc(40px + env(safe-area-inset-bottom,0px));color:#cfd8da;font-size:14px}
+/* 안심위치 */
+.mapw{margin:6px 14px;border-radius:22px;overflow:hidden;position:relative;background:#1b222c}
+.mapw svg{width:100%;display:block}
+#tme{position:absolute;left:52%;top:50%;width:16px;height:16px;margin:-8px;border-radius:50%;background:#2b7cff;border:3px solid #fff;transition:all 2.5s linear}
+#tme::after{content:"";position:absolute;inset:-18px;border-radius:50%;background:rgba(43,124,255,.25);animation:pg 1.8s infinite}
+@keyframes pg{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.tcard{margin:10px 14px;background:#1c1d1c;border-radius:20px;padding:16px 18px;line-height:1.6;font-size:15px}
+.tcard h3{margin:0 0 6px;font-size:16px}
+.tcard .ok{color:#3fd47a;font-weight:700}
+.tcard .row2{display:flex;justify-content:space-between;color:#cfcfcf;padding:7px 0;border-top:1px solid #2a2a2a;font-size:14px}
+.tbtn{margin:6px 14px 16px;background:#2a2a2c;border-radius:14px;padding:14px;text-align:center;font-weight:600}
+
+/* 카톡 대화창 (그룹 말풍선) */
+.talk .msgs{background:#0a0a0a;padding:14px 14px 10px;gap:0}
+.km{display:flex;gap:8px;align-items:flex-start;margin-top:6px}
+.km.first{margin-top:16px}
+.km.me{justify-content:flex-end}
+.kav.xs{width:38px;height:38px;border-radius:15px}
+.kav.xs svg{width:22px;height:22px}
+.kc{display:flex;flex-direction:column;min-width:0;max-width:78%}
+.km.me .kc{align-items:flex-end}
+.kn{font-size:13px;color:#bdbdbd;margin:0 0 6px 2px}
+.kr{display:flex;align-items:flex-end;gap:7px}
+.km.me .kr{flex-direction:row-reverse}
+.kb{position:relative;padding:11px 17px;border-radius:21px;font-size:17px;line-height:1.35;background:#2e2e30;color:#fff;white-space:pre-wrap;word-break:break-word}
+.km.me .kb{background:#fee500;color:#111}
+.km:not(.me).first .kb{border-top-left-radius:6px}
+.km.me.first .kb{border-top-right-radius:6px}
+.km:not(.me).first .kb::after{content:"";position:absolute;left:-6px;top:0;width:14px;height:14px;background:#2e2e30;clip-path:polygon(100% 0,0 0,100% 100%)}
+.km.me.first .kb::after{content:"";position:absolute;right:-6px;top:0;width:14px;height:14px;background:#fee500;clip-path:polygon(0 0,100% 0,0 100%)}
+.kt{font-size:12px;color:#9a9a9a;white-space:nowrap;padding-bottom:2px}
+.notif{touch-action:pan-y;user-select:none}
+.icscript{flex:1;width:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;padding:10px 26px;min-height:0;overflow:hidden;text-align:center}
+.icl{font-size:19px;line-height:1.45;animation:fi .5s both;max-width:100%;word-break:keep-all}
+.icl b{margin-right:4px;color:#ffb3b3}
+.icl.fa{color:#fff;font-weight:700}
+.icl.mine{color:#9fb3b7}.icl.mine b{color:#9fb3b7}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#incall .status,#ring .status{align-self:stretch;width:100%}
+#tfa{position:absolute;left:10%;top:14%;width:16px;height:16px;margin:-8px;border-radius:50%;background:#ff453a;border:3px solid #fff;transition:all 2s linear}
+#tfa::after{content:"";position:absolute;inset:-18px;border-radius:50%;background:rgba(255,69,58,.25);animation:pg 1.4s infinite}
+
+/* 잠금: 시간 → 쓸어 올리면 암호 */
+.lkv{position:absolute;left:0;right:0;bottom:0;top:calc(env(safe-area-inset-top,0px) + 40px);display:flex;flex-direction:column;transition:transform .45s ease,opacity .45s ease;padding-bottom:env(safe-area-inset-bottom,0px)}
+#lk1{touch-action:none}
+#lk2{opacity:0;transform:translateY(70px);pointer-events:none}
+#lock.up #lk1{opacity:0;transform:translateY(-70px);pointer-events:none}
+#lock.up #lk2{opacity:1;transform:none;pointer-events:auto}
+.lkhint{color:var(--sub);font-size:14px;text-align:center;padding:4px 0 22px;animation:hb 2s infinite}
+@keyframes hb{50%{transform:translateY(-6px);opacity:.6}}
+.clock .t{font-size:92px}
+/* 홈 바 */
+.back{display:none!important}
+.homebar{display:none!important}
+#homebar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:220px;height:calc(28px + env(safe-area-inset-bottom,0px));z-index:55;display:flex;align-items:center;justify-content:center;padding-top:6px;touch-action:none}
+#homebar i{width:140px;height:5px;border-radius:3px;background:rgba(255,255,255,.88);display:block}
+body[data-screen="lock"] #homebar,body[data-screen="home"] #homebar,body[data-screen="ring"] #homebar,body[data-screen="incall"] #homebar{display:none}
+body:not([data-screen="lock"]):not([data-screen="home"]):not([data-screen="ring"]):not([data-screen="incall"]) .screen{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 26px)}
+</style>
+</head>
+<body data-screen="lock">
+
+<section id="lock" class="screen on">
+  <div class="status"><span>9:41</span><span class="sr"></span></div>
+  <div class="lkv" id="lk1">
+    <div class="clock"><div class="d" id="date"></div><div class="t" id="time">9:41</div></div>
+    <div style="flex:1"></div>
+    <div class="lockfoot"><span>🔦</span><span>📷</span></div>
+    <button class="lkhint" id="lkhint">위로 쓸어 올려 열기</button>
+  </div>
+  <div class="lkv" id="lk2">
+    <div class="pass"><h2>암호 입력</h2><div class="dots" id="dots"><i></i><i></i><i></i><i></i></div><div class="pad" id="pad"></div></div>
+    <div class="lockfoot"><span></span><button id="lkcancel" style="color:#fff;font-size:17px">취소</button></div>
+  </div>
+</section>
+
+<section id="home" class="screen">
+  <div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+  <div class="grid" id="appgrid"></div>
+  <div class="dock" id="dock"></div>
+  <div class="home-hint"><button id="relock">화면 잠그기</button></div>
+</section>
+
+<section id="phone" class="screen">
+  <div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+  <button class="back" data-open="home">‹ 홈</button>
+
+  <div class="tab on" id="t-keypad">
+    <div class="tools"><span data-ic="search"></span><span data-ic="dots"></span></div>
+    <div class="disp"><div class="num" id="numdisp"></div><div class="who" id="who"></div></div>
+    <div class="kp" id="kp"></div>
+    <div class="kbot">
+      <button class="callbtn" id="callbtn" aria-label="전화 걸기"><span data-ic="call"></span><span>HD</span></button>
+      <button class="del" id="del" aria-label="지우기">⌫</button>
+    </div>
+  </div>
+
+  <div class="tab" id="t-recents">
+    <div class="hdr"><h1>전화</h1></div>
+    <div class="tools"><span data-ic="sort"></span><span data-ic="search"></span><span data-ic="dots"></span></div>
+    <div class="scroll" id="recents"></div>
+  </div>
+
+  <div class="tab" id="t-contacts">
+    <div class="hdr"><h1>전화</h1><p id="ccount"></p></div>
+    <div class="tools"><span data-ic="plus"></span><span data-ic="search"></span><span data-ic="dots"></span></div>
+    <div class="scroll" id="contacts"></div>
+  </div>
+
+  <div class="tabbar">
+    <button data-tab="keypad" class="on"><span data-ic="keypad"></span>키패드</button>
+    <button data-tab="recents"><span data-ic="recent"></span>최근기록</button>
+    <button data-tab="contacts"><span data-ic="person"></span>연락처</button>
+  </div>
+  <div class="homebar"></div>
+</section>
+
+<section id="incall" class="screen">
+  <div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+  <div class="ictop">
+    <span class="rc"><span data-ic="call"></span><span id="ctime">00:00</span></span>
+    <span class="sep">/</span>
+    <span class="rc" id="recstat"><i class="dot"></i>녹음 <span id="rtime">00:00</span></span>
+  </div>
+  <div class="icname" id="cname"></div>
+  <div class="icnum" id="cnum"></div>
+  <div class="icstat" id="cstat">연결 중…</div>
+  <div class="icscript" id="icscript"></div>
+    <div class="panel">
+    <div class="pgrid">
+      <button id="bRec" class="act"><span class="pi"><span class="rbox"><svg viewBox="0 0 24 24"><path d="M17 8a4 4 0 0 0-3.4 6H10.4A4 4 0 1 0 7 16h10a4 4 0 0 0 0-8zM7 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm10 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg></span></span><span id="bRecT">녹음 중지</span></button>
+      <button data-toast="영상통화는 준비 중이에요"><span class="pi"><svg viewBox="0 0 24 24"><path d="M15 8v8H5V8h10m1-2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4V7a1 1 0 0 0-1-1z"/></svg></span>영상통화</button>
+      <button class="tg"><span class="pi"><svg viewBox="0 0 24 24"><path d="M12.5 2 17 6.5 13.4 10 17 13.5 12.5 18v-5.6l-3.1 3.1-1-1 3.7-3.7L8.4 7.5l1-1 3.1 3.1V2zm1 3.3v2.9l1.4-1.4-1.4-1.5zm0 8.4v2.9l1.4-1.5-1.4-1.4z" transform="translate(0 2)"/></svg></span>블루투스</button>
+      <button class="tg"><span class="pi"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg></span>스피커</button>
+      <button class="tg"><span class="pi"><svg viewBox="0 0 24 24"><path d="M19 11h-1.7a5.3 5.3 0 0 1-.6 2.3l1.3 1.3A7.2 7.2 0 0 0 19 11zM15 11.2V5a3 3 0 0 0-6 0v.2l6 6zM4.3 3 3 4.3l6 6V11a3 3 0 0 0 4 2.8l1.7 1.7a5.3 5.3 0 0 1-2.7.8 5.3 5.3 0 0 1-5.3-5.3H5a7 7 0 0 0 6 6.9V21h2v-3.1a7 7 0 0 0 2.4-.9l4.3 4.3 1.3-1.3L4.3 3z"/></svg></span>내 소리 차단</button>
+      <button data-toast="통화 중 키패드는 준비 중이에요"><span class="pi"><span data-ic="keypad"></span></span>키패드</button>
+    </div>
+    <button class="endbtn" id="end" aria-label="통화 종료"><span data-ic="call"></span></button>
+  </div>
+</section>
+
+<section id="talk" class="screen talk"></section>
+<section id="sms" class="screen sms"></section>
+
+<section id="insta" class="screen"></section>
+
+<section id="ring" class="screen">
+  <div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+  <div class="rl">휴대전화 · 수신 전화</div>
+  <div class="rn" id="rname"></div><div class="rnum" id="rnum"></div>
+  <div class="rav" id="rav"></div>
+  <div class="rbtns"><button class="rb dec" id="rdec" aria-label="거절"></button><button class="rb acc" id="racc" aria-label="수락"></button></div>
+  <div class="rcap"><span>거절</span><span>수락</span></div>
+</section>
+
+<section id="track" class="screen"></section>
+
+<section id="camera" class="screen">
+  <div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+  <button class="back" data-open="home">‹ 홈</button>
+  <video id="camv" autoplay playsinline muted></video>
+  <div class="shutter"><div class="thumb" id="camthumb"></div><button class="sh" id="shot" aria-label="촬영"><span></span></button><button id="flip" style="font-size:26px;width:48px">🔄</button></div>
+</section>
+
+<section id="gallery" class="screen">
+  <div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+  <button class="back" data-open="home">‹ 홈</button>
+  <div class="chead"><h1>갤러리</h1><button id="addph">＋ 사진 추가</button><input type="file" id="fileph" accept="image/*" multiple hidden></div>
+  <div class="scroll" style="padding:0"><div id="gg"></div><div class="empty" id="gempty">사진이 없어요. 카메라로 찍거나 ＋를 눌러 추가하세요</div></div>
+  <div class="viewer" id="viewer"><img id="vimg" alt=""><div class="vb"><button id="vclose">닫기</button><button id="vdel">삭제</button></div></div>
+</section>
+
+<section id="diary" class="screen">
+  <div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+  <button class="back" data-open="home">‹ 홈</button>
+  <div class="chead"><h1>일기</h1></div>
+  <textarea class="dtxt" id="dtxt" placeholder="오늘 하루는 어땠나요?"></textarea>
+  <div class="drow">
+    <div class="mic"><button class="rec sm" id="recBtn" aria-label="음성 녹음"><span></span></button><span id="rstate">음성으로 남기기</span></div>
+    <button class="pill" id="dsave">저장</button>
+  </div>
+  <canvas id="wave" width="600" height="120" style="height:44px"></canvas>
+  <div class="scroll" id="dlist"></div>
+</section>
+
+<div class="notif" id="notif"><div class="ni" id="ni"></div><div class="nt"><div class="na"><span id="na"></span><span>지금</span></div><div class="nn" id="nn"></div><div class="nm" id="nm"></div></div></div>
+<div id="homebar" aria-label="홈으로"><i></i></div>
+<div class="toast" id="toast"></div>
+
+<script>const SEED_IMGS=["p1.jpg", "p2.jpg", "p3.jpg", "p4.jpg", "p5.jpg"];</script>
+<script>
+/* ====== 여기만 고치세요 ====== */
+const PASSCODE = "";     // 비워 두면 아무 4자리나 열림. 예: "1234"
+const REAL_CALL = true;  // true: 통화 화면이 뜬 뒤 실제 전화 앱도 연결 / false: 통화 화면만 표시
+const ME = "나";         // 내 프로필 이름
+const CONTACTS = [       // fav:true 는 즐겨찾기. 이름과 번호를 실제 값으로 바꾸세요
+  {name:"엄마",       num:"010-0000-0001", fav:true},
+  {name:"아버지",     num:"010-0000-0002", fav:true},
+  {name:"외할아버지", num:"010-0000-0003", fav:true},
+  {name:"사장님",     num:"010-0000-0004", fav:true},
+  {name:"가영",       num:"010-0000-0005"},
+  {name:"나인스원",   num:"02-000-0006"},
+  {name:"친구",       num:"010-0000-0007"},
+  {name:"학원",       num:"02-000-0008"}
+];
+const CALLS = [          // type: in 수신 / out 발신 / missed 부재중
+  {num:"010-0000-0002", type:"missed", day:"오늘", time:"오후 10:49", cnt:12},
+  {num:"114", type:"in", day:"오늘", time:"오전 11:04", cnt:2},
+  {num:"1644-1107", type:"in", day:"오늘", time:"오전 10:37"},
+  {num:"010-0000-0002", type:"out", day:"오늘", time:"오전 9:53"},
+  {num:"031-000-0078", type:"in", day:"어제", time:"오후 1:49"},
+  {num:"010-0000-0007", type:"missed", day:"10월 21일 수요일", time:"오후 3:43"}
+];
+const BATTERY = 25;         // 상단 바 배터리 숫자
+const FATHER_NUM = "010-0000-0002";
+const FATHER_CALLS = [14, 45, 80];   // 아버지에게서 전화가 오는 시각(페이지 연 뒤 몇 초)
+const FAKE_TIME = "22:50";   // 폰 시계를 이 시각에서 시작 (밤 10시 50분). 실제 시각 쓰려면 ""
+const PHOTO_DAYS = [0,0,1,3,6];   // 갤러리 사진 5장이 각각 며칠 전에 찍힌 걸로 보일지
+const KAKAO = [          // 카톡 대화 목록 (me:true 는 내가 보낸 말)
+  {name:"아버지", msgs:[{t:"내일은 일찍 들어와라",time:"어제"},{me:1,t:"네",time:"어제"}]},
+  {name:"엄마", msgs:[{t:"밥 먹었어?",time:"오전 9:10"},{me:1,t:"응 먹었어",time:"오전 9:12"}]},
+  {name:"친구", msgs:[{t:"오늘 뭐해?",time:"어제"}]},
+  {name:"단톡방", msgs:[{t:"내일 몇 시에 모여?",time:"어제"}]}
+];
+const SMS = [            // 문자 대화 목록
+  {name:"1644-1107", msgs:[{t:"[안내] 택배가 배송 완료되었습니다.",time:"오전 10:37"}]},
+  {name:"학원", msgs:[{t:"오늘 수업 18시입니다.",time:"어제"}]}
+];
+const FRIENDS = ["가영","가윤언니","외할아버지","사장님","친구","학원"];  // 카톡 친구 목록(대화 상대 이름도 자동 포함)
+const IG = {                // 인스타 설정
+  me:"나", bio:"한 줄 소개", followers:128, following:96,
+  stories:["엄마","친구","가영","학원"],
+  posts:[
+    {user:"친구", e:"🌇", bg:["#ff9a8b","#ff6a88"], likes:24, cap:"오늘 하늘 대박"},
+    {user:"가영", e:"🍜", bg:["#f6d365","#fda085"], likes:51, cap:"점심은 라멘"},
+    {user:"엄마", e:"🌷", bg:["#a1c4fd","#c2e9fb"], likes:9,  cap:"봄이 왔네"}
+  ]
+};
+const DIARY_SEED = [   // 일기 (ago: 며칠 전). 최신이 위로 보여요
+  {ago:1,   t:"오늘도 전화가 열 통 넘게 왔다. 받지 않았다. 받으면 어디냐는 말밖에 안 하니까. 퇴근길에 내 뒤에 누가 서 있는 것 같아서 한참을 돌아서 왔다."},
+  {ago:7,   t:"요즘 폰이 이상하다. 내가 어디 있는지 아버지가 다 아는 것 같다. 알바가 끝나는 시간에 정확히 전화가 온다. 모아 둔 돈이 조금 쌓였다. 나갈 수 있을까."},
+  {ago:30,  t:"알바 간다고 말한 적이 없는데 아버지가 알았다. 누가 알려준 걸까. 그날 밤 집이 조용하지 않았다. 다음 날 출근길엔 계속 뒤를 돌아봤다."},
+  {ago:60,  t:"첫 월급을 받았다. 생각보다 적었지만 내 돈이다. 아버지가 알면 가져갈 것 같아서 통장은 책 사이에 숨겨 뒀다. 처음으로 내 힘으로 뭔가를 한 기분이 들었다."},
+  {ago:90,  t:"알바 첫 출근. 계산이 느려서 손님한테 한소리 들었는데 이상하게 괜찮았다. 집이 아닌 곳에 있다는 게 이렇게 숨통이 트이는 일인 줄 몰랐다. 사장님이 내일도 나오라고 했다."},
+  {ago:98,  t:"편의점 알바 면접을 봤다. 자퇴생이라고 하면 싫어할까 봐 걱정했는데 사장님은 별말 없이 내일부터 나오라고 했다. 오랜만에 웃었다."},
+  {ago:105, t:"집에 있는 시간이 너무 길다. 눈치만 보게 된다. 돈이 있어야 이 집을 나갈 수 있다. 알바를 구해야겠다."},
+  {ago:118, t:"아버지한테 자퇴한 걸 들켰다. 소리 지르는 걸 듣고 있는데 아무 생각이 안 들었다. 방문을 잠그고 밤새 가만히 앉아 있었다."},
+  {ago:120, t:"오늘 자퇴서를 냈다. 담임이 한참 붙잡았지만 마음은 바뀌지 않았다. 학교만 가면 숨이 막혔다. 집에는 아직 말하지 못했다."}
+];
+const TRACK_LOG = [    // 안심위치 앱의 이동 기록
+  ["오후 10:41","편의점 앞 (퇴근)"],["오후 10:12","편의점"],["오후 5:58","집 근처"],["오후 5:20","버스정류장"]
+];
+const TRIGGERS = ["찾으러","찾아낸다","끌고 온다","찾아간다","데리러","출발한다","가는 중","다 왔다"];
+const AUTO_REPLIES = ["그만하세요","오지 마세요 제발","저 지금 집에 안 가요","제발 부탁이에요 오지 마세요"];
+const KEYWORD_RULES = [   // 내가 아버지에게 이 단어를 보내면 반응: replies=[말, 단계](-1은 어느 단계든 OK), rage=화, n=기본 문자 수. 같은 말은 한 번만 나와요
+  {words:["씨발","시발","씨벌","좆같","좆","개새끼","꺼져","닥쳐"], rage:2, n:2, replies:[
+    ["방금 뭐라고 했냐",0],["아버지한테 지금 뭐라고 했냐고",0],["너 그 말 책임질 수 있냐",0],["씨발 진짜 말이 안 통하네",0],
+    ["거기 가만히 있어라 지금 간다",1],["집에 가서 보자 기다려라",1]]},
+  {words:["죽어","뒤져","죽여"], rage:3, n:2, replies:[
+    ["뭐라고?",0],["지금 아버지한테 그 소리가 나오냐",0],["…",-1],
+    ["가만히 있어라 지금 간다 내가",1],["끊지 말고 받아라",1],["각오하고 있어",1]]},
+  {words:["경찰","신고"], rage:2, n:2, replies:[
+    ["신고? 해봐라",0],["가정 일에 경찰이 와서 뭐라고 할 것 같냐",0],["그런 소리 하고 다니지 마라",0],
+    ["그 전에 내가 먼저 간다",1],["신고하든 말든 거기 있어라",1]]},
+  {words:["그만","제발","오지마","오지 마"], rage:1, n:2, replies:[
+    ["내가 뭘 했다고 그만하래",0],["그럼 들어와서 얘기해",0],["일단 받아봐라 얘기 좀 하자",0],
+    ["그건 만나서 얘기하자 간다",1],["그 말은 가서 들으마",1]]},
+  {words:["죄송","잘못했","미안"], rage:0, n:2, replies:[
+    ["죄송하면 들어와",0],["말로만 그러지 말고 위치 말해",0],["알았으니까 기다려라 간다",1],["그래 거기서 기다려라",1]]}
+];
+const ANGRY_SCRIPTS = [      // 내가 욕을 해서 화가 많이 올라간 뒤 받는 전화
+  [["아버지","아까 보낸 말 다시 해 봐라"],["아버지","아버지한테 그런 말이 나오냐 지금"],["나","…죄송해요"],["아버지","늦었다. 지금 가고 있으니까 기다려라"],["아버지","끊지 마라 끊으면 더 안 좋아진다"]],
+  [["아버지","어디냐 말해라"],["나","다시는 안 그럴게요"],["아버지","그 소리 몇 번째냐 진짜"],["아버지","위치 다 나온다고 했지 도망갈 데도 없다"],["아버지","거기 있어라 가고 있으니까"]]
+];
+const DIST_START = 2600;   // 안심위치: 아버지와의 시작 거리(m)
+const DIST_SPEED = 30;     // 초당 가까워지는 거리(m)
+const MIN_DIST = 60;
+const ALERTS = [           // [거리(m) 이하가 되면, 안심위치가 보내는 문자]
+  [2000,"[안심위치] 보호자(아버지)가 위치를 확인하고 있어요."],
+  [1500,"[안심위치] 보호자(아버지)가 이쪽으로 이동 중이에요! 약 1.5km"],
+  [1000,"[안심위치] 상대방이 이쪽으로 오고 있어요! 약 1km 남았어요."],
+  [600,"[안심위치] 상대방이 가까워지고 있어요! 약 600m"],
+  [300,"[안심위치] 상대방이 이쪽으로 오고 있어요!! 300m 이내입니다."],
+  [100,"[안심위치] 상대방이 바로 근처에 있어요!! 100m 이내"]
+];
+const SOS_WORDS = ["살려","도와줘","도와주","구해줘","sos"];   // 친구에게 이런 말을 보내면 친구가 오는 걸 암시하는 문자가 와요
+const SOS_FRIENDS = ["친구","가영"];
+const SOS_FLOW = [   // [몇 초 뒤, 친구가 보내는 말]
+  [1.5,"헐 무슨 일이야"],[4,"어디야 지금"],[8,"혹시 아버지야?"],[12,"알겠어 거기서 움직이지 마 내가 갈게"],
+  [19,"택시 탔어 10분이면 도착해"],[42,"5분만 더 버텨 거의 다 왔어"],[64,"나 도착했어 어디 있어? 건물 앞이야"]
+];
+const FRIEND_RULES = [  // 친구에게 보내는 평범한 말에 대한 답
+  {words:["들어왔","집이야","집왔"], reply:"다행이다 오늘 고생했어 푹 쉬어"},
+  {words:["고마워","고맙"], reply:"뭘ㅎㅎ 무슨 일 있으면 바로 말해"}
+];
+const REPLY_BY_CALL = true;   // true: 내가 아버지에게 카톡을 보내면 문자 대신 전화가 와서 욕함 / false: 문자로 욕 답장
+const CALL_POOLS = {         // 아버지 전화를 받으면 화면 가운데에 한 줄씩. 카톡과 같은 단계(0·1·2)의 대본이 나와요. [누가, 말, (단계 올리기)]
+  0:[ // 아직 어디냐고 묻는 단계
+    [["아버지","지금 어디냐"],["나","일하는 중이에요"],["아버지","일 끝난 지가 언젠데"],["아버지","누가 그런 데 다니래"],["나","죄송해요 곧 갈게요"],["아버지","곧 언제. 말을 똑바로 해라"],["아버지","30분 안에 들어와"]],
+    [["아버지","전화를 몇 번을 했는지 알고 있냐"],["나","…"],["아버지","대답을 해라 대답을"],["아버지","내가 이러는 것도 다 너 때문이다"],["나","그만 좀 하세요"],["아버지","그만하긴 뭘 그만해"],["아버지","말로 안 되면 내가 데리러 간다",1]]
+  ],
+  1:[ // 데리러 오는 중
+    [["아버지","지금 가고 있다 거기 있어라"],["나","오지 마세요"],["아버지","오지 말라고 하면 안 갈 줄 아냐"],["아버지","위치 다 나온다 거짓말하지 마라"],["나","제발 그만하세요"],["아버지","끊으면 더 안 좋아진다"]],
+    [["아버지","차 막힌다 금방 간다"],["나","…제발요"],["아버지","돈은 다 어디다 쓰냐 내가 모르는 줄 아냐"],["아버지","도착하면 전화한다 꼭 받아라"],["나","저 안 갈 거예요"],["아버지","그건 와서 말해라"]]
+  ],
+  2:[ // 거의 도착
+    [["아버지","거의 다 왔다 앞에 편의점 보인다 거기냐"],["나","저 여기 없어요"],["아버지","없긴 뭐가 없어 위치 찍혀 있는데"],["아버지","나와라 안에 있는 거 다 안다"],["아버지","문 열어라"]]
+  ]
+};
+const FATHER_REPLIES = [   // REPLY_BY_CALL=false 일 때 문자로 오는 답장: [말, 단계]
+  ["말대답하냐",0],["그 얘기는 집에서 하자",0],["뭐 잘했다고 또 말을 하냐",0],["하 진짜 사람 속 뒤집네",0],
+  ["똑바로 말해라",0],["거짓말하지 말고",0],["대체 어디냐",0],["가는 길이니까 거기 있어라",1],["다 얘기해 줄 테니까 기다려",1]
+];
+const FATHER_APP  = "talk";    // 아버지 메시지가 오는 앱: "talk"(카톡) 또는 "sms"(문자)
+const FATHER_NAME = "아버지";
+const FATHER_TEXTS = [         // 아버지 카톡: [몇 초 뒤, 단계, 말]  단계 0=어디냐고 묻는 중 / 1=데리러 오는 중 / 2=거의 도착
+  [5,0,"어디냐"],[8,0,"전화 받아"],[10,0,"야"],[17,0,"몇 시인데 아직도 안 들어오냐"],[20,0,"전화는 왜 안 받아"],
+  [22,0,"누구랑 있냐"],[28,0,"카톡 읽었으면 답을 해라"],[31,0,"내가 전화하면 바로 받으라고 했지"],[36,0,"일단 집에 와서 얘기하자"],
+  [44,1,"안 들어오면 내가 데리러 간다"],[48,1,"위치 나오던데 거기 있어라"],[55,1,"지금 출발한다"],
+  [58,1,"가는 중이니까 전화 받아라"],[67,1,"20분이면 간다"],[78,2,"거의 다 왔다 어디 건물이냐"],[86,2,"도착했다 나와라"]
+];
+
+const OTHERS = [               // 다른 사람에게서 오는 카톡 (after: 몇 초 뒤)
+  {after:7,  app:"talk", name:"친구", text:"집 잘 들어갔어?"},
+  {after:21, app:"talk", name:"친구", text:"알바 끝나고 바로 간다더니 연락이 없네"},
+  {after:36, app:"talk", name:"가영", text:"내일 알바 몇 시에 가?"},
+  {after:55, app:"talk", name:"친구", text:"읽으면 답장 좀 줘 걱정돼"},
+  {after:72, app:"talk", name:"가영", text:"괜찮은 거지? 아까 전화 안 받길래"}
+];
+const INCOMING = [...FATHER_TEXTS.map(x=>({after:x[0], app:FATHER_APP, name:FATHER_NAME, text:x[2]})), ...OTHERS];
+/* ============================ */
+
+let OFF=0;if(FAKE_TIME){const [H,M]=FAKE_TIME.split(':').map(Number),b=new Date();b.setHours(H,M,0,0);OFF=b-new Date()}
+const clockNow=()=>new Date(Date.now()+OFF);
+const STATUS_R=`<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9z"/><path d="M15.500 8.500 18 10.500l-2.500 2 2.500 2-2.500 2" fill="none" stroke="#fff" stroke-width="1.600" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 12.500a10.500 10.500 0 0 1 14 0M8.500 16a5.500 5.500 0 0 1 7 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="19.500" r="1.600"/></svg><span class="w6">6<br>↑↓</span><svg viewBox="0 0 24 24"><rect x="2" y="15" width="3.500" height="6" rx="1"/><rect x="7.500" y="11" width="3.500" height="10" rx="1"/><rect x="13" y="7" width="3.500" height="14" rx="1"/><rect x="18.500" y="3" width="3.500" height="18" rx="1" fill-opacity=".35"/></svg><span class="bat"><svg viewBox="0 0 24 24"><path d="M20 3C9 3 4 9 4 15c0 1.500.4 2.800 1 4l1.400-1c-.3-.9-.4-1.800-.4-3 5 0 9-2 11-6-2 .8-4.400 1.500-7 1.600C13 8 16 6 20 3z"/></svg>${BATTERY}</span>`;
+const paintStatus=()=>document.querySelectorAll('.sr').forEach(e=>{if(!e.firstChild)e.innerHTML=STATUS_R});
+
+const $=s=>document.querySelector(s);
+const tel=n=>'tel:'+n.replace(/[^0-9+*#]/g,'');
+const digits=s=>s.replace(/\D/g,'');
+const nameOf=n=>(CONTACTS.find(c=>digits(c.num)===digits(n))||{}).name||'';
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));document.body.dataset.screen=id}
+function go(id){show(id);if(id==='camera')camStart();else camStop();if(id==='talk'||id==='sms')CH[id].list();if(id==='insta')igRender()}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1400)}
+
+/* 아이콘 */
+const IC={
+ search:'<svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 14 15.5l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>',
+ dots:'<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>',
+ plus:'<svg viewBox="0 0 24 24"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></svg>',
+ sort:'<svg viewBox="0 0 24 24"><path d="M3 6h14v2H3zm0 5h9v2H3zm0 5h6v2H3zm11-4h8l-4 5z"/></svg>',
+ call:'<svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>',
+ keypad:'<svg viewBox="0 0 24 24"><path d="M6 4a1.6 1.6 0 1 1 0 .01zm6 0a1.6 1.6 0 1 1 0 .01zm6 0a1.6 1.6 0 1 1 0 .01zM6 9.5a1.6 1.6 0 1 1 0 .01zm6 0a1.6 1.6 0 1 1 0 .01zm6 0a1.6 1.6 0 1 1 0 .01zM6 15a1.6 1.6 0 1 1 0 .01zm6 0a1.6 1.6 0 1 1 0 .01zm6 0a1.6 1.6 0 1 1 0 .01zM12 20.5a1.6 1.6 0 1 1 0 .01z"/></svg>',
+ recent:'<svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z" transform="translate(0 1) scale(.85)"/><path d="M14 3h7v7h-2V6.4l-5 5-1.4-1.4 5-5H14z"/></svg>',
+ person:'<svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5c0-3-5-4.5-8-4.5z"/></svg>',
+ star:'<svg viewBox="0 0 24 24"><path d="m12 2 3 6.5 7 .8-5.2 4.8 1.4 7L12 17.600 5.800 21l1.400-7L2 9.300l7-.8z"/></svg>'
+};
+document.querySelectorAll('[data-ic]').forEach(e=>e.outerHTML=IC[e.dataset.ic]);
+document.querySelectorAll('.tools svg').forEach(s=>s.parentElement&&(s.onclick=()=>toast('아직 준비 중이에요')));
+
+/* 홈 앱 */
+const APPS=[
+  {n:"갤러리",i:"<svg viewBox=\"0 0 64 64\" width=\"42\" height=\"42\"><ellipse cx=\"32\" cy=\"17\" rx=\"8.5\" ry=\"14\" fill=\"#fff\" fill-opacity=\".82\" transform=\"rotate(0 32 32)\"/><ellipse cx=\"32\" cy=\"17\" rx=\"8.5\" ry=\"14\" fill=\"#fff\" fill-opacity=\".82\" transform=\"rotate(60 32 32)\"/><ellipse cx=\"32\" cy=\"17\" rx=\"8.5\" ry=\"14\" fill=\"#fff\" fill-opacity=\".82\" transform=\"rotate(120 32 32)\"/><ellipse cx=\"32\" cy=\"17\" rx=\"8.5\" ry=\"14\" fill=\"#fff\" fill-opacity=\".82\" transform=\"rotate(180 32 32)\"/><ellipse cx=\"32\" cy=\"17\" rx=\"8.5\" ry=\"14\" fill=\"#fff\" fill-opacity=\".82\" transform=\"rotate(240 32 32)\"/><ellipse cx=\"32\" cy=\"17\" rx=\"8.5\" ry=\"14\" fill=\"#fff\" fill-opacity=\".82\" transform=\"rotate(300 32 32)\"/><circle cx=\"32\" cy=\"32\" r=\"6.5\" fill=\"#ff8a2b\"/></svg>",c:"linear-gradient(135deg,#7b2ff7 0%,#e0307a 50%,#ff7a2f 100%)",open:"gallery",sq:1},{n:"일기",i:"📔",c:"#ff9f0a",open:"diary"},
+  {n:"인스타",i:"📸",c:"linear-gradient(45deg,#feda75,#d62976 55%,#4f5bd5)",open:"insta"},
+  {n:"안심위치",i:"📍",c:"#2b7cff",open:"track"}
+];
+const DOCK=[
+  {n:"전화",i:"📞",c:"#30d158",open:"phone",tab:"keypad"},{n:"카톡",i:"💬",c:"#fee500",open:"talk",bd:"talk"},
+  {n:"문자",i:"✉️",c:"#34c759",open:"sms",bd:"sms"},{n:"카메라",i:"📷",c:"#8e8e93",open:"camera"}
+];
+const appHTML=(a,l)=>`<button class="app" data-app="${a.n}"><div class="ic" style="background:${a.c};${a.b?'border:1px solid var(--line);':''}${a.sq?'border-radius:20px;':''}">${a.i}${a.bd?`<span class="badge" id="bd-${a.bd}"></span>`:''}</div>${l?a.n:''}</button>`;
+$('#appgrid').innerHTML=APPS.map(a=>appHTML(a,1)).join('');
+$('#dock').innerHTML=DOCK.map(a=>appHTML(a,0)).join('');
+document.addEventListener('click',e=>{
+  const o=e.target.closest('[data-open]');if(o){go(o.dataset.open);return}
+  const p=e.target.closest('[data-app]');
+  if(p){const a=[...APPS,...DOCK].find(x=>x.n===p.dataset.app);
+    if(a.tab)tab(a.tab);go(a.open);return}
+  const t=e.target.closest('[data-toast]');if(t){toast(t.dataset.toast);return}
+  const c=e.target.closest('[data-call]');if(c)startCall(c.dataset.call);
+});
+
+/* 시계 */
+function tick(){
+  const d=clockNow(),h=d.getHours()%12||12,m=String(d.getMinutes()).padStart(2,'0');
+  $('#time').textContent=h+':'+m;
+  document.querySelectorAll('.clk').forEach(e=>e.textContent=h+':'+m);paintStatus();
+  $('#date').textContent=d.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'long'});
+}
+tick();setInterval(tick,15000);
+
+/* 암호 */
+let code="";
+[["1",""],["2","ABC"],["3","DEF"],["4","GHI"],["5","JKL"],["6","MNO"],["7","PQRS"],["8","TUV"],["9","WXYZ"],["",""],["0",""],["⌫",""]].forEach(([k,s])=>{
+  const b=document.createElement('button');
+  if(!k){b.className='ghost';b.disabled=true}
+  else{b.innerHTML=k+(s?'<small>'+s+'</small>':'');if(k==='⌫')b.className='ghost';b.onclick=()=>press(k)}
+  $('#pad').appendChild(b);
+});
+const paint=()=>document.querySelectorAll('#dots i').forEach((d,i)=>d.classList.toggle('f',i<code.length));
+function press(k){
+  if(k==='⌫')code=code.slice(0,-1);else if(code.length<4)code+=k;
+  paint();
+  if(code.length===4)setTimeout(()=>{
+    if(!PASSCODE||code===PASSCODE){code="";paint();show('home')}
+    else{const d=$('#dots');d.classList.add('shake');setTimeout(()=>d.classList.remove('shake'),400);code="";paint()}
+  },150);
+}
+$('#relock').onclick=()=>{$('#lock').classList.remove('up');show('lock')};
+
+/* 탭 */
+function tab(n){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.id==='t-'+n));
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.tab===n));
+}
+document.querySelectorAll('.tabbar button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+
+/* 키패드 */
+let dial="";
+const KP=[["1","",""],["2","","ABC"],["3","","DEF"],["4","ㄱㅋ","GHI"],["5","ㄴㄹ","JKL"],["6","ㄷㅌ","MNO"],["7","ㅂㅍ","PQRS"],["8","ㅅㅎ","TUV"],["9","ㅈㅊ","WXYZ"],["*","",""],["0","ㅇㅁ","+"],["#","",""]];
+$('#kp').innerHTML=KP.map(([k,a,b])=>`<button data-k="${k}" class="${k==='*'?'star':''}"><b>${k}</b><span class="k">${a}</span><span class="k">${b}</span></button>`).join('');
+$('#kp').onclick=e=>{const b=e.target.closest('[data-k]');if(b){dial+=b.dataset.k;upd()}};
+$('#del').onclick=()=>{dial=dial.slice(0,-1);upd()};
+function upd(){
+  $('#numdisp').textContent=dial;$('#who').textContent=dial?nameOf(dial):'';
+  $('#callbtn').classList.toggle('on',!!dial);$('#del').classList.toggle('on',!!dial);
+}
+$('#callbtn').onclick=()=>dial?startCall(dial):toast('번호를 입력하세요');
+upd();
+
+/* 최근기록 */
+const arrow={in:'↙',out:'↗',missed:'↙'};
+const groups={};CALLS.forEach(c=>(groups[c.day]=groups[c.day]||[]).push(c));
+let rh=`<div class="card banner">발신번호 및 스팸 확인 기능을 켜보세요. 발신번호를 추적해서 스팸 전화가 올 때 알려줍니다.<div class="acts"><button data-toast="나중에 다시 알려드릴게요">나중에</button><button data-toast="아직 준비 중이에요">켜기</button></div></div>`;
+for(const d in groups){
+  rh+=`<div class="grp">${d}</div><div class="card">`+groups[d].map(c=>
+   `<button class="row ${c.type==='missed'?'missed':''}" data-call="${c.num}">
+     <span class="ci">${IC.call}<b>${arrow[c.type]}</b></span>
+     <span class="n">${nameOf(c.num)||c.num}${c.cnt?' ('+c.cnt+')':''}</span><span class="w">${c.time}</span></button>`).join('')+`</div>`;
+}
+$('#recents').innerHTML=rh;
+
+/* 연락처 */
+const COL=['#7b1fa2','#5fd3a4','#8c9eff','#b388ff','#8bc34a','#4db6ac','#ff8a65','#64b5f6'];
+const av=n=>{const i=[...n].reduce((a,c)=>a+c.charCodeAt(0),0)%COL.length;return `<span class="av" style="background:${COL[i]}">${n.length>2?n.slice(0,2):n}</span>`};
+const crow=c=>`<button class="row crow" data-call="${c.num}">${av(c.name)}<span class="n">${c.name}</span></button>`;
+const ko=(a,b)=>a.name.localeCompare(b.name,'ko');
+const favs=CONTACTS.filter(c=>c.fav).sort(ko),rest=CONTACTS.filter(c=>!c.fav).sort(ko);
+$('#ccount').textContent=`전화번호가 저장된 연락처 ${CONTACTS.length}개`;
+$('#contacts').innerHTML=
+ `<div class="card banner">연락처를 최신으로 유지하려면 계정의 자동 동기화 옵션을 켜세요.<div class="acts"><button data-toast="나중에 다시 알려드릴게요">나중에</button><button data-toast="아직 준비 중이에요">켜기</button></div></div>
+  <div class="grp">내 프로필</div><div class="card"><button class="row crow" data-toast="내 프로필">${av(ME)}<span class="n">${ME}</span></button></div>`+
+ (favs.length?`<div class="grp">${IC.star}즐겨찾기</div><div class="card">${favs.map(crow).join('')}</div>`:'')+
+ (rest.length?`<div class="grp">전체</div><div class="card">${rest.map(crow).join('')}</div>`:'');
+
+/* 통화 화면 */
+let ctid,csec=0,recOn=true,rsec=0,prev='phone';
+const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function startCall(num,noReal){
+  const nm=nameOf(num);
+  $('#cname').textContent=nm||num;$('#cnum').textContent=nm?num:'';
+  csec=0;rsec=0;recOn=true;$('#ctime').textContent='00:00';$('#rtime').textContent='00:00';
+  $('#bRecT').textContent='녹음 중지';$('#bRec').classList.add('act');$('#recstat').style.display='';
+  $('#cstat').textContent='연결 중…';
+  document.querySelectorAll('.pgrid .tg').forEach(b=>b.classList.remove('act'));
+  show('incall');clearInterval(ctid);
+  if(digits(num)===digits(FATHER_NUM))playScript();else{stopScript();$('#icscript').innerHTML=''}
+  let started=false;
+  ctid=setInterval(()=>{
+    if(!started){started=true;$('#cstat').textContent='';return}
+    csec++;$('#ctime').textContent=mmss(csec);
+    if(recOn){rsec++;$('#rtime').textContent=mmss(rsec)}
+  },1000);
+  if(REAL_CALL&&!noReal)setTimeout(()=>{if($('#incall').classList.contains('on'))location.href=tel(num)},700);
+}
+$('#end').onclick=()=>{clearInterval(ctid);stopScript();show('phone');flushFatherQ()};
+$('#bRec').onclick=()=>{
+  recOn=!recOn;$('#bRec').classList.toggle('act',recOn);
+  $('#bRecT').textContent=recOn?'녹음 중지':'녹음';$('#recstat').style.display=recOn?'':'none';
+};
+document.querySelectorAll('.pgrid .tg').forEach(b=>b.onclick=()=>b.classList.toggle('act'));
+
+
+/* ===== 카톡 / 문자 ===== */
+const nowT=()=>{const d=clockNow(),h=d.getHours();return (h<12?'오전 ':'오후 ')+(h%12||12)+':'+String(d.getMinutes()).padStart(2,'0')};
+const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const AVC=['#7b1fa2','#5fd3a4','#8c9eff','#ff8a65','#64b5f6','#8bc34a'];
+const avc=n=>{const i=[...n].reduce((a,c)=>a+c.charCodeAt(0),0)%AVC.length;return `<span class="av" style="background:${AVC[i]}">${n.length>2?n.slice(0,2):n}</span>`};
+const CH={};
+function mkChat(id,title,data){
+  const st={data:data.map(d=>({...d,unread:0})),cur:-1};CH[id]=st;
+  const el=$('#'+id);
+  el.innerHTML=`<div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+   <div class="cview on" id="${id}-l"><button class="back" data-open="home">‹ 홈</button><div class="chead"><h1>${title}</h1></div><div class="scroll" style="padding:0" id="${id}-ls"></div></div>
+   <div class="cview" id="${id}-t"><div class="chead th"><button id="${id}-b">‹ 목록</button><h1 id="${id}-h" style="font-size:19px;text-align:center"></h1><span style="width:50px"></span></div><div class="msgs" id="${id}-m"></div><div class="inp"><input id="${id}-i" placeholder="메시지 입력"><button id="${id}-s">전송</button></div></div>`;
+  st.list=()=>{
+    st.cur=-1;$('#'+id+'-l').classList.add('on');$('#'+id+'-t').classList.remove('on');
+    $('#'+id+'-ls').innerHTML=st.data.map((c,i)=>{const l=c.msgs[c.msgs.length-1]||{t:'',time:''};
+      return `<button class="crow2" data-ci="${i}">${avc(c.name)}<div class="tx"><div class="nm">${esc(c.name)}</div><div class="lm">${esc(l.t)}</div></div><div class="meta"><span>${l.time}</span>${c.unread?`<b>${c.unread}</b>`:''}</div></button>`}).join('');
+    st.badge();
+  };
+  st.badge=()=>{const n=st.data.reduce((a,c)=>a+c.unread,0),bd=$('#bd-'+id);if(bd){bd.textContent=n;bd.classList.toggle('on',n>0)}};
+  st.render=st.list;
+  st.open=i=>{
+    st.cur=i;const c=st.data[i];c.unread=0;
+    $('#'+id+'-l').classList.remove('on');$('#'+id+'-t').classList.add('on');
+    $('#'+id+'-h').textContent=c.name;st.draw();
+    st.badge();
+  };
+  st.draw=()=>{
+    const c=st.data[st.cur],m=$('#'+id+'-m');if(!c)return;
+    m.innerHTML=c.msgs.map(x=>`<div class="m ${x.me?'me':''}"><div class="b">${esc(x.t)}</div><span class="tm">${x.time}</span></div>`).join('');
+    m.scrollTop=m.scrollHeight;
+  };
+  st.send=()=>{const inp=$('#'+id+'-i'),v=inp.value.trim();if(!v||st.cur<0)return;
+    st.data[st.cur].msgs.push({me:1,t:v,time:nowT()});inp.value='';st.draw();onSent(id,st.data[st.cur].name,v)};
+  el.onclick=e=>{const r=e.target.closest('[data-ci]');if(r)st.open(+r.dataset.ci)};
+  $('#'+id+'-b').onclick=st.list;$('#'+id+'-s').onclick=st.send;
+  $('#'+id+'-i').onkeydown=e=>{if(e.key==='Enter')st.send()};
+  st.list();
+}
+mkChat('sms','문자',SMS);
+
+
+/* ===== 카톡 (다크 스타일) ===== */
+const PERSON='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8.5" r="4"/><path d="M4 21c0-4.200 3.600-6.500 8-6.500s8 2.300 8 6.500z"/></svg>';
+const KG=[['#8cc3ff','#4c8df0'],['#c3bcff','#8d86ee'],['#97e6d4','#46c2a8'],['#ffd08f','#f59a4a']];
+const kav=(n,sm)=>{const g=KG[[...n].reduce((a,c)=>a+c.charCodeAt(0),0)%KG.length];return `<span class="kav ${sm?'sm':''}" style="background:linear-gradient(160deg,${g[0]},${g[1]})">${PERSON}</span>`};
+const KI={
+ search:IC.search,
+ chatplus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v3a3 3 0 0 1-3 3H9l-5 3V8a3 3 0 0 1 3-3h6"/><path d="M18 3v6M15 6h6"/></svg>',
+ gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.200"/><path d="M19.400 15a1.700 1.700 0 0 0 .3 1.800l.1.100a2 2 0 1 1-2.800 2.800l-.1-.1a1.700 1.700 0 0 0-1.800-.3 1.700 1.700 0 0 0-1 1.500V21a2 2 0 1 1-4 0v-.1a1.700 1.700 0 0 0-1.100-1.500 1.700 1.700 0 0 0-1.800.3l-.1.100a2 2 0 1 1-2.800-2.800l.1-.1a1.700 1.700 0 0 0 .3-1.800 1.700 1.700 0 0 0-1.500-1H3a2 2 0 1 1 0-4h.1a1.700 1.700 0 0 0 1.500-1.100 1.700 1.700 0 0 0-.3-1.800l-.1-.1a2 2 0 1 1 2.800-2.800l.1.1a1.700 1.700 0 0 0 1.800.3H9a1.700 1.700 0 0 0 1-1.500V3a2 2 0 1 1 4 0v.1a1.700 1.700 0 0 0 1 1.500 1.700 1.700 0 0 0 1.800-.3l.1-.1a2 2 0 1 1 2.800 2.800l-.1.100a1.700 1.700 0 0 0-.3 1.800V9a1.700 1.700 0 0 0 1.500 1H21a2 2 0 1 1 0 4h-.1a1.700 1.700 0 0 0-1.500 1z"/></svg>',
+ addp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 3.500-6 8-6M18 14v6M15 17h6"/></svg>',
+ n_p:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.200"/><path d="M4 21c0-4.500 3.500-6.500 8-6.500s8 2 8 6.500z"/></svg>',
+ n_c:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.500 3 2 6.600 2 11c0 2.700 1.600 5 4.100 6.400L5 21.500l4.300-2.400c.9.200 1.800.3 2.700.3 5.500 0 10-3.600 10-8.200S17.500 3 12 3z"/></svg>',
+ n_v:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 4C6 4 2 7.400 2 11.600c0 2.300 1.200 4.300 3.100 5.700L4.500 21l4-2.100c.8.200 1.600.3 2.500.3 5 0 9-3.400 9-7.600S16 4 11 4zm-1.500 5 5 2.600-5 2.600z"/></svg>',
+ n_s:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 8h12l1.200 13H4.800zm3-.5V6a3 3 0 0 1 6 0v1.500h-2V6a1 1 0 0 0-2 0v1.500z"/></svg>',
+ n_m:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>'
+};
+function mkTalk(data){
+  const id='talk',st={data:data.map(d=>({...d,unread:0})),cur:-1,filter:'all',sort:'name'};CH[id]=st;
+  const el=$('#talk');
+  el.innerHTML=`<div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+  <div class="tv" id="talk-f"><button class="back" data-open="home">‹ 홈</button>
+    <div class="th1">${kav(IG.me,1)}<span style="flex:1;margin-left:6px;font-size:18px">${ME}</span><div class="ti" data-toast="아직 준비 중이에요">${KI.search}${KI.addp}${KI.gear}</div></div>
+    <div class="chips"><span class="chip on">친구</span><span class="chip" data-toast="아직 준비 중이에요">소식</span></div>
+    <div class="scroll" style="padding:0" id="talk-fl"></div></div>
+  <div class="tv on" id="talk-c"><button class="back" data-open="home">‹ 홈</button>
+    <div class="th1"><h1>채팅</h1><div class="ti" data-toast="아직 준비 중이에요">${KI.search}${KI.chatplus}${KI.gear}</div></div>
+    <div class="chips"><span class="chip on" data-f="all">전체</span><span class="chip" data-f="unread">안읽음 <b id="talk-ub" style="display:none"></b></span><span class="chip" data-toast="통화 기록이 없어요">통화</span></div>
+    <div class="scroll" style="padding:0" id="talk-ls"></div></div>
+  <div class="tv" id="talk-t"><div class="chead th"><button id="talk-b">‹</button><h1 id="talk-h" style="font-size:19px;text-align:center"></h1><span style="width:34px"></span></div>
+    <div class="msgs" id="talk-m"></div><div class="inp"><input id="talk-i" placeholder="메시지 입력"><button id="talk-s">전송</button></div></div>
+  <div class="tnav" id="talk-nav">
+    <button data-tn="friends">${KI.n_p}</button><button data-tn="chats" class="on">${KI.n_c}<span class="nb" id="talk-nb"></span></button>
+    <button data-toast="아직 준비 중이에요">${KI.n_v}</button><button data-toast="아직 준비 중이에요">${KI.n_s}</button><button data-toast="아직 준비 중이에요">${KI.n_m}</button></div>`;
+  const view=v=>{['f','c','t'].forEach(k=>$('#talk-'+k).classList.toggle('on',k===v));
+    $('#talk-nav').style.display=v==='t'?'none':'flex';
+    el.querySelectorAll('[data-tn]').forEach(b=>b.classList.toggle('on',(b.dataset.tn==='friends')===(v==='f')&&v!=='t'||(b.dataset.tn==='chats'&&v==='c')))};
+  const total=()=>st.data.reduce((a,c)=>a+c.unread,0);
+  st.badge=()=>{const n=total(),nb=$('#talk-nb'),ub=$('#talk-ub'),bd=$('#bd-talk');
+    nb.textContent=n;nb.classList.toggle('on',n>0);ub.textContent=n;ub.style.display=n?'':'none';
+    if(bd){bd.textContent=n;bd.classList.toggle('on',n>0)}};
+  st.render=()=>{
+    const rows=st.data.map((c,i)=>({c,i})).filter(x=>st.filter==='all'||x.c.unread);
+    $('#talk-ls').innerHTML=rows.map(({c,i})=>{const l=c.msgs[c.msgs.length-1]||{t:'',time:''};
+      return `<button class="krow" data-ci="${i}">${kav(c.name)}<div class="tx"><div class="nm">${esc(c.name)}</div><div class="lm">${esc(l.t)}</div></div><div class="mt"><span>${l.time}</span>${c.unread?`<b>${c.unread}</b>`:''}</div></button>`}).join('')||'<div class="empty">채팅이 없어요</div>';
+    el.querySelectorAll('[data-f]').forEach(c=>c.classList.toggle('on',c.dataset.f===st.filter));
+    st.badge();
+  };
+  st.list=()=>{st.cur=-1;view('c');st.render()};
+  st.friends=()=>{
+    const names=[...new Set([...st.data.map(c=>c.name),...FRIENDS])];
+    if(st.sort==='name')names.sort((a,b)=>a.localeCompare(b,'ko'));
+    $('#talk-fl').innerHTML=`<div class="ksec"><div>친구<span>${names.length}</span></div><div class="seg"><button data-sort="name" class="${st.sort==='name'?'on':''}">가나다순</button><button data-sort="add" class="${st.sort==='add'?'on':''}">친구추가순</button></div></div>`+
+      names.map(n=>`<button class="krow" data-fn="${esc(n)}">${kav(n)}<div class="tx"><div class="nm">${esc(n)}</div></div></button>`).join('');
+  };
+  st.open=i=>{st.cur=i;const c=st.data[i];c.unread=0;view('t');$('#talk-h').textContent=c.name;st.draw();st.badge()};
+  st.draw=()=>{const c=st.data[st.cur],m=$('#talk-m');if(!c)return;const L=c.msgs;
+    m.innerHTML=L.map((x,i)=>{
+      const p=L[i-1],n=L[i+1],first=!p||!!p.me!==!!x.me,last=!n||!!n.me!==!!x.me||n.time!==x.time;
+      const side=x.me?'':(first?kav(c.name,1).replace('kav sm','kav xs'):'<span class="kav xs" style="visibility:hidden"></span>');
+      return `<div class="km ${x.me?'me':''} ${first?'first':''}">${side}<div class="kc">${!x.me&&first?`<div class="kn">${esc(c.name)}</div>`:''}<div class="kr"><div class="kb">${esc(x.t)}</div>${last?`<span class="kt">${x.time}</span>`:''}</div></div></div>`}).join('');
+    m.scrollTop=m.scrollHeight};
+  st.send=()=>{const inp=$('#talk-i'),v=inp.value.trim();if(!v||st.cur<0)return;
+    st.data[st.cur].msgs.push({me:1,t:v,time:nowT()});inp.value='';st.draw();onSent(id,st.data[st.cur].name,v)};
+  el.onclick=e=>{
+    const r=e.target.closest('[data-ci]');if(r){st.open(+r.dataset.ci);return}
+    const f=e.target.closest('[data-fn]');if(f){let i=st.data.findIndex(c=>c.name===f.dataset.fn);if(i<0){st.data.unshift({name:f.dataset.fn,msgs:[],unread:0});i=0}st.open(i);return}
+    const c=e.target.closest('[data-f]');if(c){st.filter=c.dataset.f;st.render();return}
+    const so=e.target.closest('[data-sort]');if(so){st.sort=so.dataset.sort;st.friends();return}
+    const n=e.target.closest('[data-tn]');if(n){if(n.dataset.tn==='friends'){st.cur=-1;view('f');st.friends()}else st.list()}
+  };
+  $('#talk-b').onclick=st.list;$('#talk-s').onclick=st.send;
+  $('#talk-i').onkeydown=e=>{if(e.key==='Enter')st.send()};
+  st.list();
+}
+mkTalk(KAKAO);
+
+/* ===== 인스타 ===== */
+let igTab='home',igLiked={};
+const igAv=(n,cls)=>`<div class="sring ${cls||''}"><div class="sin" style="background:#2a2a2a">${n.slice(0,1)}</div></div>`;
+function igRender(){
+  const el=$('#insta');
+  const nav=`<div class="ig-nav"><button data-ig="home" class="${igTab==='home'?'on':''}">🏠</button><button data-toast="아직 준비 중이에요">🔍</button><button data-ig="add">➕</button><button data-toast="아직 준비 중이에요">🎬</button><button data-ig="prof" class="${igTab==='prof'?'on':''}">👤</button></div>`;
+  let body='';
+  if(igTab==='home'){
+    body=`<div class="ig-top"><span class="ig-logo">Instagram</span><span class="ti"><span data-toast="아직 준비 중이에요">♡</span><span data-toast="아직 준비 중이에요">✈️</span></span></div>
+     <div class="ig-stories"><div class="ig-st">${igAv(IG.me,'me')}내 스토리</div>${IG.stories.map(n=>`<div class="ig-st">${igAv(n)}${n}</div>`).join('')}</div>
+     <div class="scroll" style="padding:0">`+IG.posts.map((p,i)=>`<div class="ig-post"><div class="ig-ph">${igAv(p.user)}<span>${p.user}</span></div>
+      <div class="ig-img" style="background:linear-gradient(135deg,${p.bg[0]},${p.bg[1]})">${p.e}</div>
+      <div class="ig-act"><span data-like="${i}" class="${igLiked[i]?'liked':''}">${igLiked[i]?'❤':'♡'}</span><span data-toast="아직 준비 중이에요">💬</span><span data-toast="아직 준비 중이에요">✈️</span></div>
+      <div class="ig-lk">좋아요 ${p.likes+(igLiked[i]?1:0)}개</div><div class="ig-cp"><b>${p.user}</b> ${esc(p.cap)}</div></div>`).join('')+`</div>`;
+  }else{
+    body=`<div class="ig-top"><span style="font-weight:700;font-size:20px">${IG.me}</span><span class="ti"><span data-ig="add">➕</span></span></div>
+     <div class="scroll"><div class="ig-prof"><div class="ig-pr1">${igAv(IG.me,'me')}<div class="ig-stat"><div><b>${PHOTOS.length}</b>게시물</div><div><b>${IG.followers}</b>팔로워</div><div><b>${IG.following}</b>팔로잉</div></div></div>
+     <div style="margin-top:12px;font-weight:600">${IG.me}</div><div style="font-size:14px;color:#ccc">${esc(IG.bio)}</div>
+     <div class="ig-btn" data-toast="아직 준비 중이에요">프로필 편집</div>
+     <div class="ig-grid">${PHOTOS.map(p=>`<div style="background-image:url('${p.u}')"></div>`).join('')}</div>
+     ${PHOTOS.length?'':'<div class="empty">사진이 없어요. ➕를 눌러 올려 보세요</div>'}</div></div>`;
+  }
+  el.innerHTML=`<div class="status"><span class="clk">9:41</span><span class="sr"></span></div><button class="back" data-open="home">‹ 홈</button>${body}${nav}<input type="file" id="igfile" accept="image/*" multiple hidden>`;
+  tick();
+}
+$('#insta').addEventListener('click',e=>{
+  const l=e.target.closest('[data-like]');if(l){igLiked[l.dataset.like]=!igLiked[l.dataset.like];igRender();return}
+  const n=e.target.closest('[data-ig]');if(!n)return;
+  if(n.dataset.ig==='add'){$('#igfile').click();return}
+  igTab=n.dataset.ig;igRender();
+});
+$('#insta').addEventListener('change',e=>{
+  if(e.target.id!=='igfile')return;
+  [...e.target.files].forEach(f=>PHOTOS.push({u:URL.createObjectURL(f),t:new Date()}));gRender();igTab='prof';igRender();toast('게시물을 올렸어요');
+});
+
+/* 알림 배너 (카톡/문자 오는 모양) */
+let nt2,pend=null,swiped=false;
+function incoming(app,name,text){
+  if(name===FATHER_NAME&&callBusy()){fq.push([app,name,text]);return}
+  {const key=name+'|'+text;if(said.has(key))return;
+   if(name===FATHER_NAME){const sg=LS.has(text)?LS.get(text):0;if(sg>=0&&sg<stage)return;if(sg>stage)setStage(sg)}
+   said.add(key)}
+  const st=CH[app];let i=st.data.findIndex(c=>c.name===name);
+  if(i<0){st.data.unshift({name,msgs:[],unread:0});i=0}
+  st.data[i].msgs.push({t:text,time:nowT()});
+  if(name===FATHER_NAME&&TRIGGERS.some(k=>text.includes(k)))setTimeout(()=>autoReply(app,name),1200);
+  if(st.cur===i&&$('#'+app).classList.contains('on')){st.draw()}else st.data[i].unread++;
+  if(st.cur<0)st.render();else st.badge();
+  if(st.cur===i&&$('#'+app).classList.contains('on'))return;
+  const talk=app==='talk';
+  $('#ni').style.background=talk?'#fee500':'#34c759';$('#ni').textContent=talk?'💬':'✉️';
+  $('#na').textContent=talk?'카카오톡':'메시지';$('#nn').textContent=name;$('#nm').textContent=text;
+  pend={app,name};$('#notif').classList.add('on');
+  if(navigator.vibrate)navigator.vibrate([180,80,180]);
+  clearTimeout(nt2);nt2=setTimeout(()=>$('#notif').classList.remove('on'),5000);
+}
+$('#notif').onclick=()=>{
+  if(swiped){swiped=false;return}
+  $('#notif').classList.remove('on');if(!pend)return;
+  if($('#lock').classList.contains('on')){toast('잠금을 해제하세요');return}
+  const st=CH[pend.app];show(pend.app);camStop();
+  const idx=st.data.findIndex(c=>c.name===pend.name);st.open(idx);
+};
+INCOMING.forEach(m=>setTimeout(()=>incoming(m.app,m.name,m.text),m.after*1000));
+
+/* ===== 갤러리 ===== */
+const PHOTOS=SEED_IMGS.map((u,i)=>{const d=new Date();d.setDate(d.getDate()-(PHOTO_DAYS[i]||0));d.setHours(20-i*2,10+i*7,0,0);return{u,t:d}});
+const dayLabel=d=>{const n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate()),b=new Date(d.getFullYear(),d.getMonth(),d.getDate()),df=Math.round((a-b)/864e5);
+  return df===0?'오늘':df===1?'어제':d.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'long'})};
+function gRender(){
+  const idx=PHOTOS.map((_,i)=>i).sort((x,y)=>PHOTOS[y].t-PHOTOS[x].t);
+  let html='',last='';
+  idx.forEach(i=>{const k=dayLabel(PHOTOS[i].t);
+    if(k!==last){if(last)html+='</div>';html+=`<div class="gd">${k}</div><div class="gg">`;last=k}
+    html+=`<div data-pi="${i}" style="background-image:url('${PHOTOS[i].u}')"></div>`});
+  if(last)html+='</div>';
+  $('#gg').innerHTML=html;
+  $('#gempty').style.display=PHOTOS.length?'none':'';
+  const t=$('#camthumb');t.style.backgroundImage=idx.length?`url('${PHOTOS[idx[0]].u}')`:'';
+}
+let vi=-1;
+$('#gg').onclick=e=>{const d=e.target.closest('[data-pi]');if(!d)return;vi=+d.dataset.pi;$('#vimg').src=PHOTOS[vi].u;$('#viewer').classList.add('on')};
+$('#vclose').onclick=()=>$('#viewer').classList.remove('on');
+$('#vdel').onclick=()=>{if(vi>=0){PHOTOS.splice(vi,1);gRender()}$('#viewer').classList.remove('on')};
+$('#addph').onclick=()=>$('#fileph').click();
+$('#fileph').onchange=e=>{[...e.target.files].forEach(f=>PHOTOS.push({u:URL.createObjectURL(f),t:new Date()}));e.target.value='';gRender()};
+gRender();
+
+/* ===== 카메라 ===== */
+let camS=null,facing='environment';
+async function camStart(){
+  camStop();
+  try{camS=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing},audio:false});$('#camv').srcObject=camS}
+  catch(e){toast('카메라 권한이 필요해요')}
+}
+function camStop(){if(camS){camS.getTracks().forEach(t=>t.stop());camS=null}}
+$('#flip').onclick=()=>{facing=facing==='user'?'environment':'user';camStart()};
+$('#shot').onclick=()=>{
+  const v=$('#camv');if(!camS||!v.videoWidth){toast('카메라가 준비되지 않았어요');return}
+  const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);
+  c.toBlob(b=>{PHOTOS.push({u:URL.createObjectURL(b),t:new Date()});gRender();toast('갤러리에 저장했어요')},'image/jpeg',.92);
+};
+$('#camthumb').onclick=()=>go('gallery');
+
+/* ===== 일기 (글 + 음성, 빨간 표시 없음) ===== */
+let ents=[],stored=null;try{stored=localStorage.getItem('diary_v2')}catch(e){}
+if(stored){try{ents=JSON.parse(stored)}catch(e){}}
+else ents=DIARY_SEED.map(x=>{const d=new Date();d.setDate(d.getDate()-x.ago);d.setHours(23,10,0,0);
+  return {d:d.toLocaleString('ko-KR',{month:'long',day:'numeric',weekday:'short',hour:'numeric',minute:'2-digit'}),t:x.t}});
+let pendingAudio=null;
+function dRender(){
+  $('#dlist').innerHTML=ents.map((e,i)=>`<div class="dent"><div class="dd"><span>${e.d}</span><button data-di="${i}">삭제</button></div>${e.t?`<p>${esc(e.t)}</p>`:''}${e.a?`<audio controls src="${e.a}"></audio>`:''}</div>`).join('')||'<div class="empty">아직 쓴 일기가 없어요</div>';
+}
+function dStore(){try{localStorage.setItem('diary_v2',JSON.stringify(ents.map(e=>({d:e.d,t:e.t}))))}catch(e){}}
+$('#dlist').onclick=e=>{const b=e.target.closest('[data-di]');if(b){ents.splice(+b.dataset.di,1);dStore();dRender()}};
+$('#dsave').onclick=()=>{
+  const t=$('#dtxt').value.trim();if(!t&&!pendingAudio){toast('내용을 입력하세요');return}
+  ents.unshift({d:new Date().toLocaleString('ko-KR',{month:'long',day:'numeric',weekday:'short',hour:'numeric',minute:'2-digit'}),t,a:pendingAudio});
+  pendingAudio=null;$('#dtxt').value='';$('#rstate').textContent='음성으로 남기기';dStore();dRender();
+};
+dRender();
+let rec,chunks=[],stream,ctx,an,raf;
+const btn=$('#recBtn'),cv=$('#wave'),g=cv.getContext('2d');
+function draw(){
+  const data=new Uint8Array(an.frequencyBinCount);an.getByteTimeDomainData(data);
+  g.clearRect(0,0,cv.width,cv.height);
+  const n=60,step=Math.floor(data.length/n),w=cv.width/n;g.fillStyle='#0a84ff';
+  for(let i=0;i<n;i++){const v=Math.abs(data[i*step]-128)/128,h=Math.max(4,v*cv.height*1.6);g.fillRect(i*w+2,(cv.height-h)/2,w-5,h)}
+  raf=requestAnimationFrame(draw);
+}
+async function rstart(){
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:true})}
+  catch(e){$('#rstate').textContent='마이크 권한이 필요해요';return}
+  ctx=new (window.AudioContext||window.webkitAudioContext)();
+  an=ctx.createAnalyser();an.fftSize=1024;ctx.createMediaStreamSource(stream).connect(an);
+  rec=new MediaRecorder(stream);chunks=[];
+  rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  rec.onstop=()=>{pendingAudio=URL.createObjectURL(new Blob(chunks,{type:rec.mimeType||'audio/webm'}));$('#rstate').textContent='녹음 완료 · 저장을 눌러 일기에 남겨요'};
+  rec.start();btn.classList.add('live');$('#rstate').textContent='녹음 중…';draw();
+}
+function rstop(){rec.stop();stream.getTracks().forEach(t=>t.stop());ctx.close();cancelAnimationFrame(raf);g.clearRect(0,0,cv.width,cv.height);btn.classList.remove('live')}
+btn.onclick=()=>btn.classList.contains('live')?rstop():rstart();
+
+/* ===== 아버지 답장 (욕) ===== */
+let repI=0;
+function onSent(app,name,text){
+  if(name!==FATHER_NAME){friendReact(app,name,text);return}
+  if(reactTo(app,name,text))return;
+  if(REPLY_BY_CALL){setTimeout(()=>{if(!callBusy())ringCall(FATHER_NUM)},1800);return}
+  FATHER_REPLIES.filter(r=>(r[1]<0||r[1]>=stage)&&!said.has(FATHER_NAME+'|'+r[0])).slice(0,2).forEach((r,k)=>setTimeout(()=>incoming(app,name,r[0]),1100+k*1500));
+}
+
+/* ===== 수신 전화 ===== */
+function renderRecents(){
+  const groups={};CALLS.forEach(c=>(groups[c.day]=groups[c.day]||[]).push(c));
+  let rh=`<div class="card banner">발신번호 및 스팸 확인 기능을 켜보세요. 발신번호를 추적해서 스팸 전화가 올 때 알려줍니다.<div class="acts"><button data-toast="나중에 다시 알려드릴게요">나중에</button><button data-toast="아직 준비 중이에요">켜기</button></div></div>`;
+  for(const d in groups){
+    rh+=`<div class="grp">${d}</div><div class="card">`+groups[d].map(c=>
+     `<button class="row ${c.type==='missed'?'missed':''}" data-call="${c.num}"><span class="ci">${IC.call}<b>${arrow[c.type]}</b></span><span class="n">${nameOf(c.num)||c.num}${c.cnt?' ('+c.cnt+')':''}</span><span class="w">${c.time}</span></button>`).join('')+`</div>`;
+  }
+  $('#recents').innerHTML=rh;
+}
+function addMissed(num){
+  const f=CALLS[0];
+  if(f&&f.num===num&&f.type==='missed'&&f.day==='오늘'){f.cnt=(f.cnt||1)+1;f.time=nowT()}
+  else CALLS.unshift({num,type:'missed',day:'오늘',time:nowT()});
+  renderRecents();
+}
+renderRecents();
+$('#rav').innerHTML=PERSON;$('#rdec').innerHTML=IC.call;$('#racc').innerHTML=IC.call;
+let ringT=null,ringV=null,ringPrev='home',ringNum='';
+function stopRing(){clearTimeout(ringT);clearInterval(ringV);if(navigator.vibrate)navigator.vibrate(0)}
+function ringCall(num){
+  if($('#ring').classList.contains('on')||$('#incall').classList.contains('on'))return;
+  const cur=document.querySelector('.screen.on');ringPrev=cur?cur.id:'home';
+  ringNum=num;const nm=nameOf(num);
+  $('#rname').textContent=nm||num;$('#rnum').textContent=nm?num:'';
+  camStop();show('ring');
+  const v=()=>navigator.vibrate&&navigator.vibrate([600,300,600]);v();ringV=setInterval(v,2000);
+  ringT=setTimeout(()=>endRing(),14000);
+}
+function endRing(){stopRing();addMissed(ringNum);show(ringPrev);if(ringPrev==='camera')camStart();flushFatherQ()}
+$('#rdec').onclick=endRing;
+$('#racc').onclick=()=>{stopRing();startCall(ringNum,true)};
+FATHER_CALLS.forEach(t=>setTimeout(()=>ringCall(FATHER_NUM),t*1000));
+
+/* ===== 안심위치 (가짜 위치추적 앱 – 실제 위치는 사용하지 않아요) ===== */
+(function(){
+  const el=$('#track');
+  const roads='<path d="M0 90H360M0 170H360M0 230H360" stroke="#2c3644" stroke-width="10"/><path d="M60 0V260M170 0V260M280 0V260" stroke="#2c3644" stroke-width="10"/><path d="M0 130 360 60" stroke="#364254" stroke-width="6"/><rect x="190" y="100" width="70" height="55" rx="8" fill="#20352c"/><rect x="75" y="180" width="80" height="40" rx="8" fill="#232b38"/><rect x="290" y="180" width="60" height="60" rx="8" fill="#232b38"/><path d="M0 20C80 40 140 5 360 30" stroke="#24435f" stroke-width="14" fill="none"/>';
+  el.innerHTML=`<div class="status"><span class="clk">9:41</span><span class="sr"></span></div>
+   <button class="back" data-open="home">‹ 홈</button>
+   <div class="chead"><h1>안심위치</h1></div>
+   <div class="scroll" style="padding:0">
+    <div class="mapw"><svg viewBox="0 0 360 260">${roads}</svg><div id="tfa"></div><div id="tme"></div></div>
+    <div class="tcard"><h3><span class="ok">● 위치 공유 중</span></h3>
+      보호자 <b>아버지</b>에게 실시간으로 위치를 전송하고 있어요.
+      <div class="row2"><span>마지막 전송</span><span id="tlast">3초 전</span></div>
+      <div class="row2"><span>정확도</span><span>±8m</span></div>
+      <div class="row2"><span>보호자 확인</span><span>방금 전</span></div>
+      <div class="row2"><span>보호자(아버지)와의 거리</span><span id="tdist"></span></div>
+      <div class="row2"><span>상태</span><span id="tstat" style="color:#ff8f8f;font-weight:700"></span></div></div>
+    <div class="tcard"><h3>오늘 이동 기록</h3>${TRACK_LOG.map(r=>`<div class="row2"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div>
+    <div class="tbtn" id="toff">위치 공유 해제</div></div>`;
+  $('#toff').onclick=()=>toast('보호자 승인이 필요해요');
+  let sec=3;setInterval(()=>{sec=(sec+1)%10||1;$('#tlast').textContent=sec+'초 전'},1000);
+  setInterval(()=>{const m=$('#tme');m.style.left=(48+Math.random()*10)+'%';m.style.top=(46+Math.random()*10)+'%'},2500);
+})();
+paintStatus();
+
+/* ===== 자동 답변 (그만하세요) ===== */
+let autoI=0;
+function autoReply(app,name){
+  const st=CH[app],i=st.data.findIndex(c=>c.name===name);if(i<0)return;
+  const t=AUTO_REPLIES.find(x=>!said.has('나|'+x));if(!t)return;said.add('나|'+t);
+  st.data[i].msgs.push({me:1,t,time:nowT()});
+  if(st.cur===i&&$('#'+app).classList.contains('on'))st.draw();else if(st.cur<0)st.render();
+}
+
+/* ===== 알림 왼쪽으로 밀어 없애기 ===== */
+(function(){
+  const n=$('#notif');let x0=null,dx=0;
+  n.addEventListener('pointerdown',e=>{x0=e.clientX;dx=0;n.style.transition='none'});
+  n.addEventListener('pointermove',e=>{if(x0===null)return;dx=e.clientX-x0;if(dx<0)n.style.transform='translateX('+dx+'px)'});
+  const end=()=>{
+    if(x0===null)return;
+    swiped=Math.abs(dx)>8;n.style.transition='';
+    if(dx<-70){
+      n.style.transform='translateX(-120%)';clearTimeout(nt2);pend=null;
+      setTimeout(()=>{n.style.transition='none';n.classList.remove('on');n.style.transform='';
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{n.style.transition=''}))},250);
+    }else n.style.transform='';
+    x0=null;setTimeout(()=>{swiped=false},120);
+  };
+  n.addEventListener('pointerup',end);n.addEventListener('pointercancel',end);
+})();
+
+/* ===== 통화 중 카톡 보류 / 통화 대사 ===== */
+let fq=[];
+const callBusy=()=>$('#ring').classList.contains('on')||$('#incall').classList.contains('on');
+function flushFatherQ(){const q=fq;fq=[];q.forEach((m,k)=>setTimeout(()=>incoming(m[0],m[1],m[2]),1500+k*2200))}
+let scriptT=[],scriptN=0;
+function stopScript(){scriptT.forEach(clearTimeout);scriptT=[]}
+const sIdx={};
+function playScript(){
+  stopScript();const box=$('#icscript');box.innerHTML='';
+  let key,pool;
+  if(stage>=2){key='p2';pool=CALL_POOLS[2]}else if(anger>=2){key='an';pool=ANGRY_SCRIPTS}else{key='p'+stage;pool=CALL_POOLS[stage]}
+  sIdx[key]=(key in sIdx?sIdx[key]:-1)+1;
+  const sc=pool[sIdx[key]];if(!sc)return;
+  sc.filter(l=>!said.has(l[0]+'|'+l[1])).forEach((l,k)=>scriptT.push(setTimeout(()=>{
+    said.add(l[0]+'|'+l[1]);if(l[2])setStage(l[2]);
+    const d=document.createElement('div');d.className='icl '+(l[0]==='나'?'mine':'fa');
+    d.innerHTML='<b>'+esc(l[0])+' :</b> '+esc(l[1]);box.appendChild(d);
+    while(box.children.length>5)box.removeChild(box.firstChild);
+    if(navigator.vibrate&&l[0]!=='나')navigator.vibrate(120);
+  },1500+k*2600)));
+}
+
+/* ===== 단어 반응 (아버지가 흥분) ===== */
+let anger=0,dist=DIST_START;const sentAlert=new Set();
+function reactTo(app,name,text){
+  const t=(text||'').replace(/\s+/g,'');
+  const rule=KEYWORD_RULES.find(r=>r.words.some(w=>t.includes(w.replace(/\s+/g,''))));
+  if(!rule)return false;
+  const rg=rule.rage||0;
+  anger=Math.min(anger+rg,5);dist=Math.max(MIN_DIST,dist-rg*350);
+  const cand=rule.replies.filter(r=>(r[1]<0||r[1]>=stage)&&!said.has(FATHER_NAME+'|'+r[0]));
+  const n=Math.min(cand.length,(rule.n||2)+anger),gap=Math.max(550,1100-anger*130);
+  let pick=cand.slice(0,n);
+  if(rg>=2&&stage<1&&!pick.some(r=>r[1]>=1)){const c=cand.find(r=>r[1]>=1);if(c){pick=pick.slice(0,Math.max(0,n-1));pick.push(c)}}
+  pick.forEach((r,k)=>setTimeout(()=>incoming(app,name,r[0]),700+k*gap));
+  if(REPLY_BY_CALL||rg>=2)setTimeout(()=>{if(!callBusy())ringCall(FATHER_NUM)},700+pick.length*gap+1200);
+  return true;
+}
+
+/* ===== 아버지가 다가옴 (안심위치 문자 + 지도) ===== */
+const distText=()=>dist>=1000?(dist/1000).toFixed(1)+'km':(Math.round(dist/10)*10)+'m';
+function tickDist(){
+  dist=Math.max(MIN_DIST,dist-DIST_SPEED*2);
+  const crossed=ALERTS.filter(a=>dist<=a[0]&&!sentAlert.has(a[0]));
+  crossed.forEach(a=>sentAlert.add(a[0]));
+  if(crossed.length)incoming('sms','안심위치',crossed[crossed.length-1][1]);
+  const td=$('#tdist');if(td)td.textContent=distText();
+  const f=$('#tfa');if(f){const p=1-(dist-MIN_DIST)/(DIST_START-MIN_DIST);f.style.left=(10+p*42)+'%';f.style.top=(14+p*36)+'%'}
+  const ts=$('#tstat');if(ts)ts.textContent=dist<DIST_START-300?'아버지가 이쪽으로 오고 있어요!':'보호자가 위치를 확인하고 있어요';
+}
+tickDist();setInterval(tickDist,2000);
+
+/* ===== 친구 반응 (살려줘 → 친구가 오고 있음) ===== */
+const sosDone=new Set();
+function friendReact(app,name,text){
+  if(!SOS_FRIENDS.includes(name))return;
+  const t=(text||'').replace(/\s+/g,'').toLowerCase();
+  if(!sosDone.has(name)&&SOS_WORDS.some(w=>t.includes(w))){
+    sosDone.add(name);SOS_FLOW.forEach(([d,m])=>setTimeout(()=>incoming(app,name,m),d*1000));return;
+  }
+  const r=FRIEND_RULES.find(x=>x.words.some(w=>t.includes(w)));
+  if(r)setTimeout(()=>incoming(app,name,r.reply),1600);
+}
+
+/* ===== 잠금 화면 쓸어 올리기 + 홈 바 ===== */
+(function(){
+  const L=$('#lock');let y0=null;
+  L.addEventListener('pointerdown',e=>{y0=e.clientY});
+  L.addEventListener('pointermove',e=>{if(y0!==null&&!L.classList.contains('up')&&e.clientY-y0<-50){L.classList.add('up');y0=null}});
+  L.addEventListener('pointerup',()=>{y0=null});
+  L.addEventListener('wheel',e=>{if(e.deltaY>10)L.classList.add('up')},{passive:true});
+  $('#lkhint').onclick=()=>L.classList.add('up');
+  $('#lkcancel').onclick=()=>{code='';paint();L.classList.remove('up')};
+  const hb=$('#homebar');let hy=null;
+  hb.addEventListener('pointerdown',e=>{hy=e.clientY});
+  hb.addEventListener('pointerup',()=>{if(hy!==null){hy=null;go('home')}});
+  hb.addEventListener('pointercancel',()=>{hy=null});
+})();
+
+/* ===== 이야기 단계 (카톡과 전화의 말을 맞춤) ===== */
+let stage=0;const said=new Set(),LS=new Map();
+FATHER_TEXTS.forEach(x=>LS.set(x[2],x[1]));
+KEYWORD_RULES.forEach(r=>r.replies.forEach(x=>LS.set(x[0],x[1])));
+FATHER_REPLIES.forEach(x=>LS.set(x[0],x[1]));
+function setStage(v){if(v>stage){stage=v;dist=Math.min(dist,[9999,1400,350][v]||350)}}
+window.__ok=1;
+</script>
+</body>
+</html>
